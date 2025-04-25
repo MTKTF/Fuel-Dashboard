@@ -50,9 +50,17 @@ button:hover {
     width: 100%;
     position: absolute;
     bottom: 0;
-    height: 0px; /* Set default height for Safari compatibility */
+    height: auto; /* Fix for Safari */
     min-height: 10px; /* Prevent invisible rendering */
     transition: height 0.5s ease-in-out, background-color 0.5s ease-in-out;
+}
+
+/* Mobile-Friendly Tank Scaling */
+@media (max-width: 768px) {
+    .tank-container {
+        width: 80%;
+        height: 300px;
+    }
 }
 
 /* Daily Tank Summary */
