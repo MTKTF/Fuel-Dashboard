@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Transactions</title>
-    <link rel="stylesheet" href="fuel.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="data.js?v=123"></script>
-    <script src="fuel.js"></script>
 </head>
 <body>
-
     <h1>Fuel Transactions</h1>
 
     <div class="nav-container">
@@ -21,35 +19,59 @@
     <div id="keyfob-buttons" class="keyfob-buttons"></div>
 
     <h2>Transactions for: <span id="selectedKeyfob">Select a keyfob</span></h2>
-
-    <!-- Month Selection Dropdown -->
-    <label for="monthSelect">Select Month:</label>
-    <select id="monthSelect">
-        <option value="all">Show All Months</option>
-    </select>
-
-    <!-- Table with Sorting & Filtering -->
-    <table id="fuelTable">
+    <table>
         <thead>
             <tr>
-                <th data-column="date" class="sortable">Date</th>
-                <th data-column="keyfob" class="sortable">Keyfob</th>
-                <th data-column="fuel" class="sortable">Fuel Pumped (L)</th>
-                <th data-column="mileage" class="sortable">Mileage (miles)</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Keyfob ID</th>
+                <th>Fuel Pumped (L)</th>
+                <th>Mileage (Miles)</th>
             </tr>
         </thead>
-        <tbody id="fuel-log">
-            <!-- Transaction rows will be inserted dynamically -->
-        </tbody>
+        <tbody id="fuel-log"></tbody>
     </table>
 
-    <!-- Controls -->
-    <div class="controls">
-        <button id="prevMonth">Previous Month</button>
-        <button id="nextMonth">Next Month</button>
-        <button id="resetFilters">Reset</button>
-        <button id="exportCSV">Export CSV</button>
-    </div>
+    <script>
+        function populateKeyfobButtons() {
+            let keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
 
+            // Sort keyfobs numerically (assuming format is 'Keyfob X')
+            keyfobs.sort((a, b) => {
+                const numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
+                const numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
+                return numA - numB;
+            });
+
+            const buttonContainer = document.getElementById("keyfob-buttons");
+            buttonContainer.innerHTML = ""; // Clear previous buttons
+
+            keyfobs.forEach(keyfob => {
+                const button = document.createElement("button");
+                button.textContent = keyfob;
+                button.onclick = () => filterFuelData(keyfob);
+                buttonContainer.appendChild(button);
+            });
+        }
+
+        function filterFuelData(keyfob) {
+            document.getElementById("selectedKeyfob").textContent = keyfob;
+
+            const filteredData = getDummyData().filter(entry => entry.keyfob_id === keyfob);
+
+            document.getElementById('fuel-log').innerHTML = filteredData.map(entry => {
+                const [date, time] = entry.timestamp.split(" ");
+                return `<tr>
+                    <td>${date}</td>
+                    <td>${time}</td>
+                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.distance_traveled} miles</td>
+                </tr>`;
+            }).join('');
+        }
+
+        window.onload = populateKeyfobButtons;
+    </script>
 </body>
 </html>
