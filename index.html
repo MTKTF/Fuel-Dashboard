@@ -18,31 +18,10 @@
     </div>
 
     <div class="container">
-    <div class="chart-container">
-        <canvas id="fuelChart"></canvas>
+        <div class="chart-container">
+            <canvas id="tankChart"></canvas>
+        </div>
     </div>
-    
-    <div class="chart-container">
-        <canvas id="keyfobChart"></canvas>
-    </div>
-</div>
-
-<div class="container">
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Keyfob ID</th>
-                    <th>Fuel Pumped</th>
-                    <th>Timestamp</th>
-                </tr>
-            </thead>
-            <tbody id="fuel-log"></tbody>
-        </table>
-    </div>
-</div>
-
-    <canvas id="tankChart"></canvas>
 
     <script>
         function fetchTankData() {
