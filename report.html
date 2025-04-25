@@ -11,58 +11,86 @@
 <body>
     <h1>Fuel Usage Report</h1>
 
-    <nav>
+    <div class="nav-container">
         <button onclick="window.location.href='index.html'">🏠 Home</button>
         <button onclick="window.location.href='fuel.html'">⛽ Fuel Transactions</button>
-    </nav>
+    </div>
 
-    <canvas id="weeklyUsageChart"></canvas>
+    <div class="filter-container">
+        <label for="keyfob-filter">Select Keyfob:</label>
+        <select id="keyfob-filter" onchange="filterMPG()">
+            <option value="">All Keyfobs</option>
+        </select>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="mpgChart"></canvas>
+    </div>
 
     <table>
         <thead>
             <tr>
                 <th>Keyfob ID</th>
                 <th>Fuel Pumped (L)</th>
-                <th>Tank Level (L)</th>
+                <th>Distance Traveled (Miles)</th>
+                <th>MPG</th>
                 <th>Timestamp</th>
             </tr>
         </thead>
         <tbody id="reportLog"></tbody>
     </table>
 
-    <button onclick="exportToCSV()">📂 Export to CSV</button>
-
     <script>
-        function fetchReportData() {
-            const data = getDummyData();
-            const keyfobs = data.map(entry => entry.keyfob_id);
-            const fuelAmounts = data.map(entry => entry.fuel_pumped);
-            
-            new Chart(document.getElementById('weeklyUsageChart').getContext('2d'), {
-                type: 'bar',
-                data: { labels: keyfobs, datasets: [{ label: 'Fuel Pumped (L)', data: fuelAmounts, backgroundColor: 'purple' }] },
-                options: { responsive: true }
+        function populateKeyfobDropdown() {
+            const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+            const dropdown = document.getElementById("keyfob-filter");
+
+            keyfobs.forEach(keyfob => {
+                const option = document.createElement("option");
+                option.value = keyfob;
+                option.textContent = keyfob;
+                dropdown.appendChild(option);
             });
-
-            document.getElementById('reportLog').innerHTML = data.map(entry => 
-                `<tr><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.tank_level} L</td><td>${entry.timestamp}</td></tr>`
-            ).join('');
         }
 
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Keyfob ID,Fuel Pumped (L),Tank Level (L),Timestamp\n";
-            csvContent += Array.from(document.querySelectorAll("#reportLog tr")).map(row => 
-                Array.from(row.children).map(cell => cell.textContent).join(",")
-            ).join("\n");
+        function filterMPG() {
+            const selectedKeyfob = document.getElementById("keyfob-filter").value;
+            const data = getDummyData().filter(entry => selectedKeyfob === "" || entry.keyfob_id === selectedKeyfob);
 
-            const link = document.createElement("a");
-            link.href = encodeURI(csvContent);
-            link.download = "fuel_report.csv";
-            document.body.appendChild(link);
-            link.click();
+            document.getElementById('reportLog').innerHTML = data.map(entry => {
+                const mpg = (entry.distance_traveled / (entry.fuel_pumped / 4.546)).toFixed(2); // Convert liters to gallons
+                return `<tr>
+                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.distance_traveled} miles</td>
+                    <td>${mpg} MPG</td>
+                    <td>${entry.timestamp}</td>
+                </tr>`;
+            }).join('');
+
+            updateMPGChart(data);
         }
 
-        window.onload = fetchReportData;
+        function updateMPGChart(filteredData) {
+            const timestamps = filteredData.map(entry => entry.timestamp);
+            const mpgValues = filteredData.map(entry => (entry.distance_traveled / (entry.fuel_pumped / 4.546)).toFixed(2));
+
+            mpgChart.data.labels = timestamps;
+            mpgChart.data.datasets[0].data = mpgValues;
+            mpgChart.update();
+        }
+
+        const mpgCtx = document.getElementById('mpgChart').getContext('2d');
+        const mpgChart = new Chart(mpgCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'MPG Over Time', data: [], borderColor: 'orange', fill: false }] },
+            options: { responsive: true }
+        });
+
+        window.onload = () => {
+            populateKeyfobDropdown();
+            filterMPG();
+        };
     </script>
 </body>
 </html>
