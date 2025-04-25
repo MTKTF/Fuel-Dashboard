@@ -64,11 +64,7 @@ function filterFuelData(selectedKeyfob) {
         filteredData = filteredData.filter(entry => new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long' }) === selectedMonth);
     }
 
-    // Sort transactions by date (latest first)
     filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-    // Debugging: Log filtered data
-    console.log("Filtered Data:", filteredData);
 
     document.getElementById('fuel-log').innerHTML = filteredData.map(entry => {
         const [date, time] = entry.timestamp.split(" ");
@@ -78,31 +74,21 @@ function filterFuelData(selectedKeyfob) {
     // Update summary row
     const totalFuel = filteredData.reduce((sum, entry) => sum + entry.fuel_pumped, 0);
     const totalMileage = filteredData.reduce((sum, entry) => sum + entry.distance_traveled, 0);
+    const monthlyMPG = totalFuel > 0 ? (totalMileage / totalFuel).toFixed(2) : 0;
+
     document.getElementById("totalFuel").textContent = `${totalFuel} L`;
     document.getElementById("totalMileage").textContent = `${totalMileage} miles`;
+    document.getElementById("monthlyMPG").textContent = `${monthlyMPG} MPG`;
 
-    // Debugging: Check summary row values
-    console.log("Total Fuel:", totalFuel, "Total Mileage:", totalMileage);
-}
+    // Calculate MPG change percentage from the previous month
+    let previousMPG = localStorage.getItem("previousMPG") || monthlyMPG;
+    localStorage.setItem("previousMPG", monthlyMPG);
 
-// Export to CSV
-function exportToCSV() {
-    const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
-    const selectedMonth = document.getElementById("monthSelect").value;
-    const filename = `Fuel_Transactions_${selectedKeyfob}_${selectedMonth}.csv`;
-    let csvContent = "data:text/csv;charset=utf-8,Date,Time,Keyfob ID,Fuel Pumped (L),Mileage (Miles)\n";
+    let mpgChange = previousMPG > 0 ? (((monthlyMPG - previousMPG) / previousMPG) * 100).toFixed(2) : 0;
+    let mpgChangeColor = mpgChange >= 0 ? "green" : "red";
 
-    document.querySelectorAll("#fuel-log tr").forEach(row => {
-        csvContent += Array.from(row.cells).map(cell => cell.textContent).join(",") + "\n";
-    });
-
-    csvContent += `Total,,${selectedKeyfob},${document.getElementById("totalFuel").textContent},${document.getElementById("totalMileage").textContent}\n`;
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
+    document.getElementById("mpgChange").innerHTML = `(${mpgChange}%)`;
+    document.getElementById("mpgChange").style.color = mpgChangeColor;
 }
 
 // Ensure functionality runs on page load
