@@ -11,16 +11,27 @@
 <body>
     <h1>Fuel Tank Level</h1>
 
-    <div class="nav-container">
-        <button onclick="window.location.href='index.html'">🏠 Home</button>
+    <nav>
         <button onclick="window.location.href='fuel.html'">⛽ Fuel Transactions</button>
         <button onclick="window.location.href='report.html'">📊 Reports</button>
-    </div>
+    </nav>
 
-    <div class="container">
-        <div class="chart-container">
-            <canvas id="tankChart"></canvas>
-        </div>
-    </div>
+    <canvas id="tankChart"></canvas>
+
+    <script>
+        function fetchTankData() {
+            const data = getDummyData();
+            const timestamps = data.map(entry => entry.timestamp);
+            const tankLevels = data.map(entry => entry.tank_level);
+
+            new Chart(document.getElementById('tankChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: timestamps, datasets: [{ label: 'Tank Level (L)', data: tankLevels, borderColor: 'green', fill: false }] },
+                options: { responsive: true }
+            });
+        }
+        
+        window.onload = fetchTankData;
+    </script>
 </body>
 </html>
