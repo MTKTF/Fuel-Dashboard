@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Monitoring Dashboard</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="data.js"></script>
 </head>
 <body>
-
-<button onclick="window.location.href='report.html'">View Report</button>
-    
     <h1>Fuel Monitoring Dashboard</h1>
+
+    <button onclick="window.location.href='report.html'">View Report</button>
 
     <canvas id="fuelChart"></canvas>
     <canvas id="tankChart"></canvas>
@@ -32,6 +32,10 @@
     <script>
         function fetchDummyData() {
             const data = getDummyData();
+            const today = new Date();
+            const lastWeek = new Date();
+            lastWeek.setDate(today.getDate() - 7);
+
             const tableBody = document.getElementById('fuel-log');
             tableBody.innerHTML = "";
 
@@ -41,22 +45,27 @@
             let keyfobFuel = {};
 
             data.forEach(entry => {
-                const row = `<tr>
-                    <td>${entry.keyfob_id}</td>
-                    <td>${entry.fuel_pumped} L</td>
-                    <td>${entry.tank_level} L</td>
-                    <td>${entry.timestamp}</td>
-                </tr>`;
-                tableBody.innerHTML += row;
+                const entryDate = new Date(entry.timestamp);
+                if (entryDate >= lastWeek && entryDate <= today) {
+                    // Populate table
+                    const row = `<tr>
+                        <td>${entry.keyfob_id}</td>
+                        <td>${entry.fuel_pumped} L</td>
+                        <td>${entry.tank_level} L</td>
+                        <td>${entry.timestamp}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
 
-                if (!keyfobFuel[entry.keyfob_id]) {
-                    keyfobFuel[entry.keyfob_id] = 0;
+                    // Track fuel pumped by keyfob
+                    if (!keyfobFuel[entry.keyfob_id]) {
+                        keyfobFuel[entry.keyfob_id] = 0;
+                    }
+                    keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
+
+                    timestamps.push(entry.timestamp);
+                    fuelAmounts.push(entry.fuel_pumped);
+                    tankLevels.push(entry.tank_level);
                 }
-                keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
-
-                timestamps.push(entry.timestamp);
-                fuelAmounts.push(entry.fuel_pumped);
-                tankLevels.push(entry.tank_level);
             });
 
             updateCharts(timestamps, fuelAmounts, tankLevels);
@@ -99,8 +108,5 @@
             data: { labels: [], datasets: [{ label: 'Fuel Pumped Per Keyfob (L)', data: [], backgroundColor: 'orange' }] }
         });
     </script>
-
-<link rel="stylesheet" href="style.css">
-    
 </body>
 </html>
