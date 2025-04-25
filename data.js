@@ -10,14 +10,13 @@ function getDummyData() {
     for (let week = 0; week < totalWeeks; week++) {
         for (let entry = 0; entry < entriesPerWeek; entry++) {
             const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-            const randomFuel = Math.floor(Math.random() * 200) + 50; // 50 to 250 liters
-            const randomDistance = Math.floor(Math.random() * 100) + 20; // 20 to 120 miles
+            const randomFuel = Math.floor(Math.random() * 200) + 50;
+            const randomDistance = Math.floor(Math.random() * 100) + 20;
             const randomDayOffset = Math.floor(Math.random() * 5);
 
             const transactionDate = new Date(today);
-            transactionDate.setDate(today.getDate() - (week * 5 + randomDayOffset)); // Fixed 'weekday' issue
+            transactionDate.setDate(today.getDate() - (week * 5 + randomDayOffset));
 
-            // Add monthly refuel on the 3rd to ensure the tank level stays within limits
             if (transactionDate.getDate() === 3) {
                 tankLevel = Math.min(tankLevel + 20000, 27000);
             }
@@ -36,3 +35,32 @@ function getDummyData() {
 
     return fuelData;
 }
+
+// Populate month dropdown
+function populateMonthDropdown() {
+    const monthSelect = document.getElementById("monthSelect");
+    const fuelData = getDummyData();
+
+    const months = [...new Set(fuelData.map(entry => {
+        const date = new Date(entry.timestamp.split(" ")[0]);
+        return date.toLocaleString('default', { month: 'long' });
+    }))];
+
+    const monthOrder = {
+        "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+        "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+    };
+
+    months.sort((a, b) => monthOrder[a] - monthOrder[b]);
+
+    months.forEach(month => {
+        const option = document.createElement("option");
+        option.value = month;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    monthSelect.value = months[months.length - 1]; // Preselect latest month
+}
+
+window.onload = populateMonthDropdown;
