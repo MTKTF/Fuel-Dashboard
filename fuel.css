@@ -6,59 +6,12 @@ body {
     color: white;
 }
 
-/* Navigation Buttons */
-.nav-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.nav-container button {
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    background-color: #e94560;
-    color: white;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
-
-.nav-container button:hover {
-    background-color: #ff2e63;
-}
-
-/* Keyfob Buttons */
-.keyfob-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.keyfob-buttons button {
-    padding: 8px 12px;
-    cursor: pointer;
-    border: none;
-    background-color: #e94560;
-    color: white;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
-
-.keyfob-buttons button:hover {
-    background-color: #ff2e63;
-}
-
 /* Table Styling */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
     background-color: #16213e;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 th, td {
@@ -71,46 +24,21 @@ th, td {
 th {
     cursor: pointer;
     background-color: #0f3460;
-    font-weight: bold;
-    transition: background 0.3s ease;
-}
-
-th.sortable:hover {
-    background-color: #1a1a2e;
 }
 
 th.sorted {
     background-color: #ff2e63;
 }
 
-/* Controls */
-.controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
+/* Highlight Selected Rows */
+tr.selected {
+    background-color: #1f3b6d;
+    box-shadow: 0px 0px 10px #0096ff;
+    transition: box-shadow 0.3s ease-in-out;
 }
 
-button {
-    padding: 8px 12px;
-    cursor: pointer;
-    border: none;
-    background-color: #e94560;
-    color: white;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background-color: #ff2e63;
-}
-
-/* Responsive Design */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .keyfob-buttons {
-        flex-direction: column;
-    }
-
     table {
         font-size: 14px;
     }
