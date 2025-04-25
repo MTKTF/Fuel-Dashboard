@@ -17,7 +17,7 @@
     <canvas id="tankChart"></canvas>
     <canvas id="keyfobChart"></canvas>
 
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>Keyfob ID</th>
@@ -47,7 +47,6 @@
             data.forEach(entry => {
                 const entryDate = new Date(entry.timestamp);
                 if (entryDate >= lastWeek && entryDate <= today) {
-                    // Populate table
                     const row = `<tr>
                         <td>${entry.keyfob_id}</td>
                         <td>${entry.fuel_pumped} L</td>
@@ -56,7 +55,6 @@
                     </tr>`;
                     tableBody.innerHTML += row;
 
-                    // Track fuel pumped by keyfob
                     if (!keyfobFuel[entry.keyfob_id]) {
                         keyfobFuel[entry.keyfob_id] = 0;
                     }
@@ -93,19 +91,19 @@
         const fuelCtx = document.getElementById('fuelChart').getContext('2d');
         const fuelChart = new Chart(fuelCtx, {
             type: 'line',
-            data: { labels: [], datasets: [{ label: 'Fuel Pumped (L)', data: [], borderColor: 'blue', fill: false }] }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
         const tankCtx = document.getElementById('tankChart').getContext('2d');
         const tankChart = new Chart(tankCtx, {
             type: 'line',
-            data: { labels: [], datasets: [{ label: 'Tank Level (L)', data: [], borderColor: 'green', fill: false }] }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
         const keyfobCtx = document.getElementById('keyfobChart').getContext('2d');
         const keyfobChart = new Chart(keyfobCtx, {
             type: 'bar',
-            data: { labels: [], datasets: [{ label: 'Fuel Pumped Per Keyfob (L)', data: [], backgroundColor: 'orange' }] }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     </script>
 </body>
