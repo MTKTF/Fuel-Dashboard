@@ -1,37 +1,20 @@
 function getDummyData() {
-    const keyfobs = Array.from({ length: 20 }, (_, i) => `KEYFOB-${i + 1}`);
-    const fuelData = [];
-    const today = new Date();
-    let tankLevel = 25000; // Start at 25,000 liters
-
-    const totalWeeks = 52;
-    const entriesPerWeek = 60;
-
-    for (let week = 0; week < totalWeeks; week++) {
-        for (let entry = 0; entry < entriesPerWeek; entry++) {
-            const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-            const randomFuel = Math.floor(Math.random() * 200) + 50; // 50 to 250 liters
-            const randomDayOffset = Math.floor(Math.random() * 7); // Random day within the week
-
-            const transactionDate = new Date(today);
-            transactionDate.setDate(today.getDate() - (week * 7 + randomDayOffset));
-
-            // Add monthly refuel on the 3rd, ensuring max tank level stays at 21,000 liters
-            if (transactionDate.getDate() === 3) {
-                tankLevel = Math.min(tankLevel + 20000, 21000);
-            }
-
-            // Reduce tank level (ensuring no negative values)
-            tankLevel = Math.max(0, tankLevel - randomFuel);
-
-            fuelData.push({
-                keyfob_id: randomKeyfob,
-                fuel_pumped: randomFuel,
-                tank_level: tankLevel,
-                timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString()
-            });
-        }
-    }
-
-    return fuelData;
+    return [
+        { keyfob_id: "Keyfob 3", fuel_pumped: 180, distance_traveled: 200, tank_level: 25000, timestamp: "2025-01-01 08:00" },
+        { keyfob_id: "Keyfob 5", fuel_pumped: 220, distance_traveled: 240, tank_level: 24800, timestamp: "2025-01-02 08:00" },
+        { keyfob_id: "Keyfob 1", fuel_pumped: 20000, distance_traveled: 0, tank_level: 44800, timestamp: "2025-01-03 08:00" }, // Refill
+        { keyfob_id: "Keyfob 2", fuel_pumped: 150, distance_traveled: 170, tank_level: 44650, timestamp: "2025-01-06 08:00" },
+        { keyfob_id: "Keyfob 4", fuel_pumped: 90, distance_traveled: 100, tank_level: 44560, timestamp: "2025-01-07 08:00" },
+        { keyfob_id: "Keyfob 6", fuel_pumped: 130, distance_traveled: 160, tank_level: 44430, timestamp: "2025-01-08 08:00" },
+        { keyfob_id: "Keyfob 1", fuel_pumped: 20000, distance_traveled: 0, tank_level: 64430, timestamp: "2025-02-03 08:00" }, // Refill
+        { keyfob_id: "Keyfob 2", fuel_pumped: 140, distance_traveled: 150, tank_level: 64290, timestamp: "2025-02-06 08:00" },
+        { keyfob_id: "Keyfob 5", fuel_pumped: 190, distance_traveled: 230, tank_level: 64100, timestamp: "2025-02-07 08:00" },
+        { keyfob_id: "Keyfob 3", fuel_pumped: 250, distance_traveled: 290, tank_level: 63850, timestamp: "2025-02-10 08:00" },
+        { keyfob_id: "Keyfob 4", fuel_pumped: 75, distance_traveled: 90, tank_level: 63775, timestamp: "2025-02-11 08:00" },
+        { keyfob_id: "Keyfob 6", fuel_pumped: 110, distance_traveled: 140, tank_level: 63665, timestamp: "2025-02-12 08:00" },
+        { keyfob_id: "Keyfob 1", fuel_pumped: 20000, distance_traveled: 0, tank_level: 83665, timestamp: "2025-03-03 08:00" }, // Refill
+        { keyfob_id: "Keyfob 2", fuel_pumped: 160, distance_traveled: 180, tank_level: 83505, timestamp: "2025-03-04 08:00" },
+        { keyfob_id: "Keyfob 5", fuel_pumped: 120, distance_traveled: 130, tank_level: 83385, timestamp: "2025-03-05 08:00" },
+        // More entries for the entire year...
+    ];
 }
