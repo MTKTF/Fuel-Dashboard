@@ -17,6 +17,24 @@
         <button onclick="window.location.href='report.html'">📊 Reports</button>
     </div>
 
+    <div class="filter-container">
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date">
+
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date">
+
+        <button onclick="fetchFilteredReport()">🔍 Filter Report</button>
+
+        <div class="preset-buttons">
+            <button onclick="setPresetDateRange(7)">Last 7 Days</button>
+            <button onclick="setPresetDateRange(30)">Last 30 Days</button>
+            <button onclick="setPresetDateRange(90)">Last 90 Days</button>
+        </div>
+    </div>
+
+    <button onclick="exportToCSV()">📂 Export Report to CSV</button>
+
     <div class="container">
         <div class="chart-container">
             <canvas id="weeklyUsageChart"></canvas>
@@ -35,44 +53,5 @@
             </table>
         </div>
     </div>
-
-    <script>
-        function fetchReportData() {
-            const today = new Date();
-            const lastWeek = new Date();
-            lastWeek.setDate(today.getDate() - 7);
-
-            const data = getDummyData().filter(entry => {
-                const entryDate = new Date(entry.timestamp);
-                return entryDate >= lastWeek && entryDate <= today;
-            });
-
-            if (!data || data.length === 0) {
-                document.getElementById('reportLog').innerHTML = "<tr><td colspan='4'>No data available</td></tr>";
-                return;
-            }
-
-            const tableBody = document.getElementById('reportLog');
-            tableBody.innerHTML = "";
-
-            let keyfobFuel = {};
-
-            data.forEach(entry => {
-                const row = `<tr>
-                    <td>${entry.keyfob_id}</td>
-                    <td>${entry.fuel_pumped} L</td>
-                    <td>${entry.tank_level} L</td>
-                    <td>${entry.timestamp}</td>
-                </tr>`;
-                tableBody.innerHTML += row;
-
-                keyfobFuel[entry.keyfob_id] = (keyfobFuel[entry.keyfob_id] || 0) + entry.fuel_pumped;
-            });
-
-            updateReportChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
-        }
-
-        window.onload = fetchReportData;
-    </script>
 </body>
 </html>
