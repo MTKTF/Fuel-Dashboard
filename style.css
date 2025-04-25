@@ -26,8 +26,15 @@ body {
     width: 100%;
     position: absolute;
     bottom: 0;
-    background: linear-gradient(to top, #28a745, #b7ffb7); /* Green gradient for fuel */
-    transition: height 0.5s ease-in-out; /* Smooth level adjustment */
+    background: linear-gradient(to top, #28a745, #b7ffb7);
+    transition: height 0.5s ease-in-out;
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .tank-label {
