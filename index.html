@@ -11,27 +11,56 @@
 <body>
     <h1>Fuel Tank Level</h1>
 
-    <nav>
+    <div class="nav-container">
         <button onclick="window.location.href='fuel.html'">⛽ Fuel Transactions</button>
         <button onclick="window.location.href='report.html'">📊 Reports</button>
-    </nav>
+    </div>
 
-    <canvas id="tankChart"></canvas>
+    <div class="filter-container">
+        <label for="date-range">Filter Tank Level:</label>
+        <select id="date-range" onchange="filterTankData()">
+            <option value="1">Today</option>
+            <option value="7">Last 7 Days</option>
+            <option value="30" selected>Last 30 Days</option>
+        </select>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="tankChart"></canvas>
+    </div>
 
     <script>
-        function fetchTankData() {
-            const data = getDummyData();
-            const timestamps = data.map(entry => entry.timestamp);
-            const tankLevels = data.map(entry => entry.tank_level);
+        function filterTankData() {
+            const days = parseInt(document.getElementById("date-range").value);
+            const today = new Date();
+            const startDate = new Date();
+            startDate.setDate(today.getDate() - days);
 
-            new Chart(document.getElementById('tankChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: timestamps, datasets: [{ label: 'Tank Level (L)', data: tankLevels, borderColor: 'green', fill: false }] },
-                options: { responsive: true }
+            const filteredData = getDummyData().filter(entry => {
+                const entryDate = new Date(entry.timestamp);
+                return entryDate >= startDate && entryDate <= today;
             });
+
+            updateTankChart(filteredData);
         }
-        
-        window.onload = fetchTankData;
+
+        function updateTankChart(filteredData) {
+            const timestamps = filteredData.map(entry => entry.timestamp);
+            const tankLevels = filteredData.map(entry => entry.tank_level);
+
+            tankChart.data.labels = timestamps;
+            tankChart.data.datasets[0].data = tankLevels;
+            tankChart.update();
+        }
+
+        const tankCtx = document.getElementById('tankChart').getContext('2d');
+        const tankChart = new Chart(tankCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Tank Level (L)', data: [], borderColor: 'green', fill: false }] },
+            options: { responsive: true }
+        });
+
+        window.onload = filterTankData; // Default to Last 30 Days
     </script>
 </body>
 </html>
