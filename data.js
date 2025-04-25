@@ -2,7 +2,7 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `KEYFOB-${i + 1}`);
     const fuelData = [];
     const today = new Date();
-    let tankLevel = 47000; // Start at 47,000 liters
+    let tankLevel = 21530; // Start at 47,000 liters
 
     const totalWeeks = 52;
     const entriesPerWeek = 60;
@@ -19,7 +19,7 @@ function getDummyData() {
 
             // Add monthly refuel on the 3rd, ensuring max tank level stays at 27,000 liters
             if (transactionDate.getDate() === 3) {
-                tankLevel = Math.min(tankLevel + 20000, 27000);
+                tankLevel = Math.min(tankLevel + 20000, 21530);
             }
 
             tankLevel = Math.max(0, tankLevel - randomFuel);
