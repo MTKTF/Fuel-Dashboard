@@ -3,33 +3,50 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `Keyfob ${i + 1}`);
     const fuelData = [];
     const today = new Date();
-    let tankLevel = 27000; // Starting full tank (in liters)
+    let tankLevel = 22000; // Starting tank level (in liters)
+    const maxTankCapacity = 47000; // Maximum tank capacity
 
-    for (let week = 0; week < 52; week++) {
-        for (let entry = 0; entry < 60; entry++) {
-            const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-            const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
-            const randomDistance = Math.floor(Math.random() * 100) + 20; // 20-120 miles
+    // Calculate the start date as 12 months ago
+    const startDate = new Date(today);
+    startDate.setMonth(today.getMonth() - 12);
 
-            // Decrease tank level after each transaction, but cap it at 0
-            tankLevel = Math.max(0, tankLevel - randomFuel); // Ensure tankLevel doesn't go below 0
+    // Function to generate random weekdays over the last 12 months
+    let currentDate = startDate;
+    while (currentDate <= today) {
+        const dayOfWeek = currentDate.getDay();
 
-            // Random date in the past
-            const transactionDate = new Date(today);
-            transactionDate.setDate(today.getDate() - (week * 5 + Math.floor(Math.random() * 5)));
+        // Only generate data for weekdays (Monday = 1, Friday = 5)
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            for (let transaction = 0; transaction < 20; transaction++) {
+                const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
+                const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
+                const randomDistance = Math.floor(Math.random() * 100) + 20; // 20-120 miles
 
-            fuelData.push({
-                keyfob_id: randomKeyfob,
-                fuel_pumped: randomFuel,
-                distance_traveled: randomDistance,
-                timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString(),
-                tank_level: tankLevel // Add tank level to each entry
-            });
+                // Decrease tank level after each transaction, but cap it at 0
+                tankLevel = Math.max(0, tankLevel - randomFuel);
+
+                // If the date is the 3rd of the month, refill the tank by 22000 liters but not exceeding the max capacity
+                if (currentDate.getDate() === 3) {
+                    tankLevel = Math.min(maxTankCapacity, tankLevel + 22000); // Refill on the 3rd, max tank is 47,000
+                }
+
+                fuelData.push({
+                    keyfob_id: randomKeyfob,
+                    fuel_pumped: randomFuel,
+                    distance_traveled: randomDistance,
+                    timestamp: currentDate.toISOString().split('T')[0] + " " + currentDate.toLocaleTimeString(),
+                    tank_level: tankLevel // Track tank level
+                });
+            }
         }
+
+        // Move to the next day
+        currentDate.setDate(currentDate.getDate() + 1);
     }
 
     return fuelData;
 }
+
 
 
 // Filters data by keyfob and optionally by month, then updates the fuel transactions table
