@@ -44,25 +44,25 @@
     </table>
 
     <script>
-        function updateTankLevel() {
-            setTimeout(() => {
-                const data = getDummyData();
-                const latestEntry = data[data.length - 1];
-                const tankLevel = latestEntry.tank_level || 0;
+function updateTankLevel() {
+    setTimeout(() => {
+        const data = getDummyData();
+        const latestEntry = data[data.length - 1];
+        const tankLevel = latestEntry.tank_level || 0; // Ensure there's a tank level
 
-                const maxTankCapacity = 27000;
-                const percentageFill = (tankLevel / maxTankCapacity) * 100;
+        const maxTankCapacity = 27000;
+        const percentageFill = (tankLevel / maxTankCapacity) * 100;
 
-                const fuelElement = document.getElementById("fuelLevel");
-                fuelElement.style.height = `${percentageFill}%`;
-                document.getElementById("fuelPercentage").textContent = `${percentageFill.toFixed(1)}%`;
+        const fuelElement = document.getElementById("fuelLevel");
+        fuelElement.style.height = `${percentageFill}%`;
+        document.getElementById("fuelPercentage").textContent = `${percentageFill.toFixed(1)}%`;
 
-                // Smooth animation
-                fuelElement.style.transition = "height 0.5s ease-in-out";
+        // Smooth animation
+        fuelElement.style.transition = "height 0.5s ease-in-out";
 
-                document.getElementById("currentLevel").textContent = tankLevel;
-            }, 100);
-        }
+        document.getElementById("currentLevel").textContent = tankLevel;
+    }, 100);
+}
 
         function getTodaysTransactions() {
             const today = new Date().toISOString().split('T')[0];
