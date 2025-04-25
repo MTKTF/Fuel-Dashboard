@@ -1,15 +1,23 @@
-const dummyData = [
-    { keyfob_id: 1, fuel_pumped: 20, tank_level: 46500, timestamp: "2025-04-18 10:00" },
-    { keyfob_id: 2, fuel_pumped: 15, tank_level: 46485, timestamp: "2025-04-18 12:00" },
-    { keyfob_id: 3, fuel_pumped: 30, tank_level: 46455, timestamp: "2025-04-19 14:00" },
-    { keyfob_id: 1, fuel_pumped: 25, tank_level: 46430, timestamp: "2025-04-20 16:00" },
-    { keyfob_id: 2, fuel_pumped: 18, tank_level: 46412, timestamp: "2025-04-21 09:00" }
-];
-
 function getDummyData() {
-    return [
-        { keyfob_id: "ABC123", fuel_pumped: 10, tank_level: 50, timestamp: "2025-04-01 12:00:00" },
-        { keyfob_id: "DEF456", fuel_pumped: 15, tank_level: 40, timestamp: "2025-04-02 15:30:00" },
-        { keyfob_id: "GHI789", fuel_pumped: 20, tank_level: 30, timestamp: "2025-04-03 18:45:00" }
-    ];
+    const keyfobs = Array.from({ length: 20 }, (_, i) => `KEYFOB-${i + 1}`);
+    const fuelData = [];
+    const today = new Date();
+
+    for (let i = 0; i < 500; i++) {  // Generate 500 random entries
+        const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
+        const randomFuel = Math.floor(Math.random() * 50) + 10; // 10 to 60 Liters
+        const randomTankLevel = Math.floor(Math.random() * 500) + 100; // 100 to 600 Liters
+
+        const randomDate = new Date(today);
+        randomDate.setDate(today.getDate() - Math.floor(Math.random() * 365)); // Past 1 year
+
+        fuelData.push({
+            keyfob_id: randomKeyfob,
+            fuel_pumped: randomFuel,
+            tank_level: randomTankLevel,
+            timestamp: randomDate.toISOString().split('T')[0] + " " + randomDate.toLocaleTimeString()
+        });
+    }
+
+    return fuelData;
 }
