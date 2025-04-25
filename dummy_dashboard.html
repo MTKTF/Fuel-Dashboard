@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Monitoring Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Fuel Monitoring System - Demo</h1>
+
+    <canvas id="fuelChart"></canvas>
+    <canvas id="tankChart"></canvas>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Keyfob ID</th>
+                <th>Fuel Pumped</th>
+                <th>Tank Level</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>20 L</td><td>46,500 L</td><td>2025-04-25 14:00</td></tr>
+            <tr><td>2</td><td>15 L</td><td>46,485 L</td><td>2025-04-25 14:05</td></tr>
+            <tr><td>3</td><td>30 L</td><td>46,455 L</td><td>2025-04-25 14:10</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        const ctx1 = document.getElementById('fuelChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['14:00', '14:05', '14:10'],
+                datasets: [{ label: 'Fuel Pumped (L)', data: [20, 15, 30], borderColor: 'blue', fill: false }]
+            }
+        });
+
+        const ctx2 = document.getElementById('tankChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['14:00', '14:05', '14:10'],
+                datasets: [{ label: 'Tank Level (L)', data: [46500, 46485, 46455], borderColor: 'green', fill: false }]
+            }
+        });
+    </script>
+</body>
+</html>
