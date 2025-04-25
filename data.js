@@ -4,22 +4,33 @@ function getDummyData() {
     const today = new Date();
     let tankLevel = 47000; // Start at 47,000 liters
 
-    for (let i = 0; i < 500; i++) {  // Generate 500 random entries
-        const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-        const randomFuel = Math.floor(Math.random() * 100) + 50; // 50 to 150 Liters per transaction
+    const totalWeeks = 52;
+    const entriesPerWeek = 60;
 
-        const randomDate = new Date(today);
-        randomDate.setDate(today.getDate() - Math.floor(Math.random() * 365)); // Past year data
+    for (let week = 0; week < totalWeeks; week++) {
+        for (let entry = 0; entry < entriesPerWeek; entry++) {
+            const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
+            const randomFuel = Math.floor(Math.random() * 200) + 50; // 50 to 250 Liters per transaction
+            const randomDayOffset = Math.floor(Math.random() * 7); // Random day within the week
 
-        // Reduce tank level while ensuring it never goes negative
-        tankLevel = Math.max(0, tankLevel - randomFuel);
+            const transactionDate = new Date(today);
+            transactionDate.setDate(today.getDate() - (week * 7 + randomDayOffset)); // Spread transactions over weeks
 
-        fuelData.push({
-            keyfob_id: randomKeyfob,
-            fuel_pumped: randomFuel,
-            tank_level: tankLevel,
-            timestamp: randomDate.toISOString().split('T')[0] + " " + randomDate.toLocaleTimeString()
-        });
+            // Add monthly refuel on the 3rd
+            if (transactionDate.getDate() === 3) {
+                tankLevel += 20000; // Add 20,000 liters
+            }
+
+            // Reduce tank level (ensuring no negative values)
+            tankLevel = Math.max(0, tankLevel - randomFuel);
+
+            fuelData.push({
+                keyfob_id: randomKeyfob,
+                fuel_pumped: randomFuel,
+                tank_level: tankLevel,
+                timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString()
+            });
+        }
     }
 
     return fuelData;
