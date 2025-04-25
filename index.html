@@ -48,9 +48,11 @@ function updateTankLevel() {
     setTimeout(() => {
         const data = getDummyData();
         const latestEntry = data[data.length - 1];
-        const tankLevel = latestEntry.tank_level || 0; // Ensure there's a tank level
+        const tankLevel = latestEntry.tank_level || 0;
 
-        const maxTankCapacity = 27000;
+        const maxTankCapacity = 27000; // Full tank capacity (in liters)
+
+        // Calculate percentage fill based on the current tank level
         const percentageFill = (tankLevel / maxTankCapacity) * 100;
 
         const fuelElement = document.getElementById("fuelLevel");
