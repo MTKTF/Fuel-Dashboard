@@ -17,7 +17,6 @@ function getDummyData() {
                 keyfob_id: randomKeyfob,
                 fuel_pumped: randomFuel,
                 distance_traveled: randomDistance,
-                tank_level: currentTankLevel,
                 timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString()
             });
         }
