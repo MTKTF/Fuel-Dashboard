@@ -55,6 +55,8 @@ function filterFuelData(selectedKeyfob) {
     const previousMPG = parseFloat(localStorage.getItem("previousMPG")) || 0;
     localStorage.setItem("previousMPG", monthlyMPG);
 
-    const mpgChange = previousMPG > 0 ? (((monthlyMPG - previousMPG) / previousMPG) * 100).toFixed(2) : 0;
-    const mpgChangeColor = mpgChange >= 0 ? "green" : "red";
-    const mpgChange
+const mpgChange = previousMPG > 0 ? (((monthlyMPG - previousMPG) / previousMPG) * 100).toFixed(2) : 0;
+const mpgChangeColor = mpgChange >= 0 ? "green" : "red";
+
+document.getElementById("mpgChange").textContent = `(${mpgChange}% from last)`;
+document.getElementById("mpgChange").style.color = mpgChangeColor;
