@@ -11,8 +11,8 @@ function getDummyData() {
             const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
             const randomDistance = Math.floor(Math.random() * 100) + 20; // 20-120 miles
 
-            // Decrease tank level after each transaction
-            tankLevel -= randomFuel;
+            // Decrease tank level after each transaction, but cap it at 0
+            tankLevel = Math.max(0, tankLevel - randomFuel); // Ensure tankLevel doesn't go below 0
 
             // Random date in the past
             const transactionDate = new Date(today);
@@ -30,6 +30,7 @@ function getDummyData() {
 
     return fuelData;
 }
+
 
 // Filters data by keyfob and optionally by month, then updates the fuel transactions table
 function filterFuelData(selectedKeyfob) {
