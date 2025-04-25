@@ -3,12 +3,16 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `Keyfob ${i + 1}`);
     const fuelData = [];
     const today = new Date();
+    let tankLevel = 27000; // Starting full tank (in liters)
 
     for (let week = 0; week < 52; week++) {
         for (let entry = 0; entry < 60; entry++) {
             const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
             const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
             const randomDistance = Math.floor(Math.random() * 100) + 20; // 20-120 miles
+
+            // Decrease tank level after each transaction
+            tankLevel -= randomFuel;
 
             // Random date in the past
             const transactionDate = new Date(today);
@@ -18,7 +22,8 @@ function getDummyData() {
                 keyfob_id: randomKeyfob,
                 fuel_pumped: randomFuel,
                 distance_traveled: randomDistance,
-                timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString()
+                timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString(),
+                tank_level: tankLevel // Add tank level to each entry
             });
         }
     }
