@@ -23,6 +23,7 @@ function getDummyData() {
 
     return fuelData;
 
+}
 
 function filterFuelData(selectedKeyfob) {
     document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
