@@ -2,6 +2,10 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `Keyfob ${i + 1}`);
     const fuelData = [];
     const today = new Date();
+    const maxTankCapacity = 27000;
+    let currentTankLevel = maxTankCapacity;
+
+    const allEntries = [];
 
     for (let week = 0; week < 52; week++) {
         for (let entry = 0; entry < 60; entry++) {
@@ -11,17 +15,23 @@ function getDummyData() {
             const transactionDate = new Date(today);
             transactionDate.setDate(today.getDate() - (week * 5 + Math.floor(Math.random() * 5)));
 
-            fuelData.push({
+            currentTankLevel -= randomFuel;
+            if (currentTankLevel < 0) currentTankLevel = maxTankCapacity; // simulate refill
+
+            allEntries.push({
                 keyfob_id: randomKeyfob,
                 fuel_pumped: randomFuel,
                 distance_traveled: randomDistance,
+                tank_level: currentTankLevel,
                 timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString()
             });
         }
     }
 
-    return fuelData;
+    allEntries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)); // oldest to newest
+    return allEntries;
 }
+
 
 function filterFuelData(selectedKeyfob) {
     document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
