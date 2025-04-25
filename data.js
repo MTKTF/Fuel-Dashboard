@@ -12,10 +12,10 @@ function getDummyData() {
             const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
             const randomFuel = Math.floor(Math.random() * 200) + 50; // 50 to 250 liters
             const randomDistance = Math.floor(Math.random() * 100) + 20; // 20 to 120 miles
-            const randomDayOffset = Math.floor(Math.random() * 7);
+            const randomDayOffset = Math.floor(Math.random() * 5);
 
             const transactionDate = new Date(today);
-            transactionDate.setDate(today.getDate() - (week * 7 + randomDayOffset));
+            transactionDate.setDate(today.getDate() - (weekday * 5 + randomDayOffset));
 
             // Add monthly refuel on the 3rd, ensuring max tank level stays at 27,000 liters
             if (transactionDate.getDate() === 3) {
