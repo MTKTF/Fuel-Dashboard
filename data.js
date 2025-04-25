@@ -1,5 +1,5 @@
 function getDummyData() {
-    const keyfobs = Array.from({ length: 20 }, (_, i) => `KEYFOB-${i + 1}`);
+    const keyfobs = Array.from({ length: 20 }, (_, i) => `Keyfob ${i + 1}`);
     const fuelData = [];
     const today = new Date();
 
@@ -30,7 +30,10 @@ function filterFuelData(selectedKeyfob) {
     let filteredData = getDummyData().filter(entry => entry.keyfob_id === selectedKeyfob);
 
     if (selectedMonth !== "all") {
-        filteredData = filteredData.filter(entry => new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long' }) === selectedMonth);
+        filteredData = filteredData.filter(entry => {
+            const entryMonth = new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long', year: 'numeric' });
+            return entryMonth === selectedMonth;
+        });
     }
 
     filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -49,7 +52,7 @@ function filterFuelData(selectedKeyfob) {
     document.getElementById("totalMileage").textContent = `${totalMileage} miles`;
     document.getElementById("monthlyMPG").textContent = `${monthlyMPG} MPG`;
 
-    // Calculate MPG change percentage from the previous month
+    // Store & Compare MPG with previous month
     let previousMPG = localStorage.getItem("previousMPG") || monthlyMPG;
     localStorage.setItem("previousMPG", monthlyMPG);
 
