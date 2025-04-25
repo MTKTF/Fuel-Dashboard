@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Usage Report</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="data.js"></script>
+    <script src="data.js?v=123"></script>
 </head>
 <body>
     <h1>Fuel Usage Report</h1>
@@ -40,5 +35,44 @@
             </table>
         </div>
     </div>
+
+    <script>
+        function fetchReportData() {
+            const today = new Date();
+            const lastWeek = new Date();
+            lastWeek.setDate(today.getDate() - 7);
+
+            const data = getDummyData().filter(entry => {
+                const entryDate = new Date(entry.timestamp);
+                return entryDate >= lastWeek && entryDate <= today;
+            });
+
+            if (!data || data.length === 0) {
+                document.getElementById('reportLog').innerHTML = "<tr><td colspan='4'>No data available</td></tr>";
+                return;
+            }
+
+            const tableBody = document.getElementById('reportLog');
+            tableBody.innerHTML = "";
+
+            let keyfobFuel = {};
+
+            data.forEach(entry => {
+                const row = `<tr>
+                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.tank_level} L</td>
+                    <td>${entry.timestamp}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+
+                keyfobFuel[entry.keyfob_id] = (keyfobFuel[entry.keyfob_id] || 0) + entry.fuel_pumped;
+            });
+
+            updateReportChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
+        }
+
+        window.onload = fetchReportData;
+    </script>
 </body>
 </html>
