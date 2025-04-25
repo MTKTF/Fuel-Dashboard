@@ -16,6 +16,7 @@
         <button onclick="window.location.href='index.html'">🏠 Home</button>
     </div>
 
+    <h2>Select a Keyfob:</h2>
     <div id="keyfob-buttons" class="keyfob-buttons"></div>
 
     <h2>Transactions for: <span id="selectedKeyfob">Select a keyfob</span></h2>
@@ -57,6 +58,54 @@
     <button onclick="exportToCSV()">Export to CSV</button>
     <button onclick="exportToExcel()">Export to Excel</button>
 
-    <script src="fuel.js"></script>
+    <script>
+        function populateKeyfobButtons() {
+            const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+
+            // Sort keyfobs in ascending numerical order
+            keyfobs.sort((a, b) => a.match(/\d+/) - b.match(/\d+/));
+
+            const buttonContainer = document.getElementById("keyfob-buttons");
+            buttonContainer.innerHTML = "";
+
+            let rowDiv;
+            keyfobs.forEach((keyfob, index) => {
+                if (index % 5 === 0) { // Group into rows of 5
+                    rowDiv = document.createElement("div");
+                    rowDiv.className = "keyfob-row";
+                    buttonContainer.appendChild(rowDiv);
+                }
+                const button = document.createElement("button");
+                button.textContent = keyfob;
+                button.onclick = () => filterFuelData(keyfob);
+                rowDiv.appendChild(button);
+            });
+        }
+
+        window.onload = function () {
+            populateKeyfobButtons();
+        };
+    </script>
+
+    <style>
+        .keyfob-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .keyfob-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .keyfob-row button {
+            padding: 10px;
+            font-size: 14px;
+            min-width: 100px;
+        }
+    </style>
+
 </body>
 </html>
