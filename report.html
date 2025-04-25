@@ -17,9 +17,9 @@
     </div>
 
     <div class="filter-container">
-        <label for="keyfob-filter">Select Keyfob:</label>
-        <select id="keyfob-filter" onchange="filterMPG()">
-            <option value="">All Keyfobs</option>
+        <label for="vehicle-filter">Select Vehicle Registration:</label>
+        <select id="vehicle-filter" onchange="filterMPG()">
+            <option value="">All Vehicles</option>
         </select>
     </div>
 
@@ -30,7 +30,7 @@
     <table>
         <thead>
             <tr>
-                <th>Keyfob ID</th>
+                <th>Vehicle Registration</th>
                 <th>Fuel Pumped (L)</th>
                 <th>Distance Traveled (Miles)</th>
                 <th>MPG</th>
@@ -41,26 +41,26 @@
     </table>
 
     <script>
-        function populateKeyfobDropdown() {
-            const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
-            const dropdown = document.getElementById("keyfob-filter");
+        function populateVehicleDropdown() {
+            const vehicles = [...new Set(getDummyData().map(entry => entry.vehicle_registration))];
+            const dropdown = document.getElementById("vehicle-filter");
 
-            keyfobs.forEach(keyfob => {
+            vehicles.forEach(vehicle => {
                 const option = document.createElement("option");
-                option.value = keyfob;
-                option.textContent = keyfob;
+                option.value = vehicle;
+                option.textContent = vehicle;
                 dropdown.appendChild(option);
             });
         }
 
         function filterMPG() {
-            const selectedKeyfob = document.getElementById("keyfob-filter").value;
-            const data = getDummyData().filter(entry => selectedKeyfob === "" || entry.keyfob_id === selectedKeyfob);
+            const selectedVehicle = document.getElementById("vehicle-filter").value;
+            const data = getDummyData().filter(entry => selectedVehicle === "" || entry.vehicle_registration === selectedVehicle);
 
             document.getElementById('reportLog').innerHTML = data.map(entry => {
                 const mpg = (entry.distance_traveled / (entry.fuel_pumped / 4.546)).toFixed(2); // Convert liters to gallons
                 return `<tr>
-                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.vehicle_registration}</td>
                     <td>${entry.fuel_pumped} L</td>
                     <td>${entry.distance_traveled} miles</td>
                     <td>${mpg} MPG</td>
@@ -88,7 +88,7 @@
         });
 
         window.onload = () => {
-            populateKeyfobDropdown();
+            populateVehicleDropdown();
             filterMPG();
         };
     </script>
