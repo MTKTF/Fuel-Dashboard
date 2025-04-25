@@ -16,6 +16,10 @@
         <button onclick="window.location.href='report.html'">📊 Reports</button>
     </div>
 
+    <div class="chart-container">
+        <canvas id="tankChart"></canvas>
+    </div>
+
     <div class="filter-container">
         <label for="date-range">Filter Tank Level:</label>
         <select id="date-range" onchange="filterTankData()">
@@ -23,10 +27,6 @@
             <option value="7">Last 7 Days</option>
             <option value="30" selected>Last 30 Days</option>
         </select>
-    </div>
-
-    <div class="chart-container">
-        <canvas id="tankChart"></canvas>
     </div>
 
     <script>
@@ -48,9 +48,15 @@
             const timestamps = filteredData.map(entry => entry.timestamp);
             const tankLevels = filteredData.map(entry => entry.tank_level);
 
-            tankChart.data.labels = timestamps;
-            tankChart.data.datasets[0].data = tankLevels;
-            tankChart.update();
+            const canvas = document.getElementById('tankChart');
+            canvas.style.opacity = 0; // Start fade-out
+
+            setTimeout(() => {
+                tankChart.data.labels = timestamps;
+                tankChart.data.datasets[0].data = tankLevels;
+                tankChart.update();
+                canvas.style.opacity = 1; // Fade-in after update
+            }, 300);
         }
 
         const tankCtx = document.getElementById('tankChart').getContext('2d');
