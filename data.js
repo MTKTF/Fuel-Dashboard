@@ -4,7 +4,7 @@ function getDummyData() {
     const fuelData = [];
     const today = new Date();
     const maxTankCapacity = 47000;
-    let tankLevel = 22000; // Starting tank level (in liters)
+    let tankLevel = 23500; // Set to 50% of max capacity (23,500 liters)
     const startDate = new Date(today);
     startDate.setMonth(today.getMonth() - 12); // 12 months ago from today
     let currentDate = startDate;
@@ -15,7 +15,7 @@ function getDummyData() {
 
         // Generate data only for weekdays (Mon to Fri)
         if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-            // Generate 20 transactions for this weekday (randomized)
+            // Generate 20 transactions for this weekday
             for (let transaction = 0; transaction < 20; transaction++) {
                 const keyfobIndex = Math.floor(Math.random() * 20); // Randomly select keyfob
                 const randomFuel = Math.floor(Math.random() * 201) + 50; // Random fuel pumped between 50-250 liters
@@ -46,6 +46,7 @@ function getDummyData() {
 
     return fuelData;
 }
+
 
 // Helper function to format the date and time correctly (YYYY-MM-DD HH:MM:SS)
 function formatDateTime(date, time) {
