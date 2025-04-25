@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Transactions</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="data.js"></script>
+    <script src="data.js?v=123"></script>
 </head>
 <body>
     <h1>Fuel Pumped Per Keyfob</h1>
@@ -45,5 +40,39 @@
             </table>
         </div>
     </div>
+
+    <script>
+        function fetchFuelData() {
+            const data = getDummyData();
+            if (!data || data.length === 0) {
+                document.getElementById('fuel-log').innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
+                return;
+            }
+
+            let timestamps = [];
+            let fuelAmounts = [];
+            let keyfobFuel = {};
+            const tableBody = document.getElementById('fuel-log');
+            tableBody.innerHTML = "";
+
+            data.forEach(entry => {
+                const row = `<tr>
+                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.timestamp}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+
+                keyfobFuel[entry.keyfob_id] = (keyfobFuel[entry.keyfob_id] || 0) + entry.fuel_pumped;
+                timestamps.push(entry.timestamp);
+                fuelAmounts.push(entry.fuel_pumped);
+            });
+
+            updateFuelChart(timestamps, fuelAmounts);
+            updateKeyfobChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
+        }
+
+        window.onload = fetchFuelData;
+    </script>
 </body>
 </html>
