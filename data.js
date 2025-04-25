@@ -2,13 +2,12 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `KEYFOB-${i + 1}`);
     const fuelData = [];
     const today = new Date();
-    let tankLevel = 47000;
 
     for (let week = 0; week < 52; week++) {
         for (let entry = 0; entry < 60; entry++) {
             const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-            const randomFuel = Math.floor(Math.random() * 200) + 50;
-            const randomDistance = Math.floor(Math.random() * 100) + 20;
+            const randomFuel = Math.floor(Math.random() * 200) + 50; // Ensure valid fuel values
+            const randomDistance = Math.floor(Math.random() * 100) + 20; // Ensure valid mileage
             const transactionDate = new Date(today);
             transactionDate.setDate(today.getDate() - (week * 5 + Math.floor(Math.random() * 5)));
 
@@ -65,7 +64,12 @@ function filterFuelData(selectedKeyfob) {
         filteredData = filteredData.filter(entry => new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long' }) === selectedMonth);
     }
 
+    // Sort transactions by date (latest first)
     filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Debugging: Log filtered data
+    console.log("Filtered Data:", filteredData);
+
     document.getElementById('fuel-log').innerHTML = filteredData.map(entry => {
         const [date, time] = entry.timestamp.split(" ");
         return `<tr><td>${date}</td><td>${time}</td><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.distance_traveled} miles</td></tr>`;
@@ -76,6 +80,9 @@ function filterFuelData(selectedKeyfob) {
     const totalMileage = filteredData.reduce((sum, entry) => sum + entry.distance_traveled, 0);
     document.getElementById("totalFuel").textContent = `${totalFuel} L`;
     document.getElementById("totalMileage").textContent = `${totalMileage} miles`;
+
+    // Debugging: Check summary row values
+    console.log("Total Fuel:", totalFuel, "Total Mileage:", totalMileage);
 }
 
 // Export to CSV
