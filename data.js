@@ -2,8 +2,7 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `Keyfob ${i + 1}`);
     const fuelData = [];
     const today = new Date();
-    const maxTankCapacity = 27000;
-    let currentTankLevel = maxTankCapacity;
+
 
     for (let week = 0; week < 52; week++) {
         for (let entry = 0; entry < 60; entry++) {
