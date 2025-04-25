@@ -61,6 +61,26 @@
             updateReportChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
         }
 
+        function updateReportChart(keyfobs, fuelAmounts) {
+            reportChart.data.labels = keyfobs;
+            reportChart.data.datasets[0].data = fuelAmounts;
+            reportChart.update();
+        }
+
+        const reportCtx = document.getElementById('weeklyUsageChart').getContext('2d');
+        const reportChart = new Chart(reportCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Fuel Pumped Per Keyfob (L) Over Time',
+                    data: [],
+                    backgroundColor: 'purple'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
         window.onload = fetchReportData;
     </script>
 </body>
