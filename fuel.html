@@ -34,10 +34,14 @@
     <script>
         function fetchFuelData() {
             const data = getDummyData();
+            if (!data || data.length === 0) {
+                document.getElementById('fuel-log').innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
+                return;
+            }
+
             let timestamps = [];
             let fuelAmounts = [];
             let keyfobFuel = {};
-
             const tableBody = document.getElementById('fuel-log');
             tableBody.innerHTML = "";
 
@@ -49,11 +53,7 @@
                 </tr>`;
                 tableBody.innerHTML += row;
 
-                if (!keyfobFuel[entry.keyfob_id]) {
-                    keyfobFuel[entry.keyfob_id] = 0;
-                }
-                keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
-
+                keyfobFuel[entry.keyfob_id] = (keyfobFuel[entry.keyfob_id] || 0) + entry.fuel_pumped;
                 timestamps.push(entry.timestamp);
                 fuelAmounts.push(entry.fuel_pumped);
             });
