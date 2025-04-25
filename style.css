@@ -3,7 +3,8 @@ body {
     background-color: #1a1a2e;
     color: white;
     text-align: center;
-    margin: 20px;
+    margin: 0;
+    padding: 0;
     width: 100%;
 }
 
@@ -13,30 +14,32 @@ h1 {
 }
 
 table {
-    width: 95%;
+    width: 100%;
+    max-width: 100%;
     margin: auto;
     border-collapse: collapse;
     background-color: #16213e;
+    overflow-x: auto;
+    display: block;
 }
 
 th, td {
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #0f3460;
-}
-
-th {
-    background-color: #0f3460;
+    font-size: 14px;
 }
 
 button {
     background-color: #e94560;
     color: white;
-    padding: 12px 20px;
+    padding: 12px 16px;
     border-radius: 5px;
     border: none;
     cursor: pointer;
-    font-size: 18px;
-    margin: 15px;
+    font-size: 16px;
+    margin: 10px;
+    width: 90%;
+    max-width: 300px;
 }
 
 button:hover {
@@ -44,10 +47,29 @@ button:hover {
 }
 
 canvas {
-    width: 90vw !important;
+    width: 100% !important;
+    max-width: 95vw !important;
     height: auto !important;
     display: block;
     margin: auto;
     padding: 10px;
     border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 20px;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    button {
+        font-size: 14px;
+    }
 }
