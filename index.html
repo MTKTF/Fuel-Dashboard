@@ -3,106 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuel Monitoring Dashboard</title>
+    <title>Fuel Tank Monitoring</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="data.js"></script>
 </head>
 <body>
-    <h1>Fuel Monitoring Dashboard</h1>
+    <h1>Fuel Tank Level</h1>
 
-    <button onclick="window.location.href='report.html'">View Report</button>
+    <button onclick="window.location.href='fuel.html'">View Fuel Transactions</button>
 
-    <canvas id="fuelChart"></canvas>
     <canvas id="tankChart"></canvas>
-    <canvas id="keyfobChart"></canvas>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Keyfob ID</th>
-                <th>Fuel Pumped</th>
-                <th>Tank Level</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody id="fuel-log"></tbody>
-    </table>
 
     <script>
-        function fetchDummyData() {
+        function fetchTankData() {
             const data = getDummyData();
-            const today = new Date();
-            const lastWeek = new Date();
-            lastWeek.setDate(today.getDate() - 7);
-
-            const tableBody = document.getElementById('fuel-log');
-            tableBody.innerHTML = "";
-
             let timestamps = [];
-            let fuelAmounts = [];
             let tankLevels = [];
-            let keyfobFuel = {};
 
             data.forEach(entry => {
-                const entryDate = new Date(entry.timestamp);
-                if (entryDate >= lastWeek && entryDate <= today) {
-                    const row = `<tr>
-                        <td>${entry.keyfob_id}</td>
-                        <td>${entry.fuel_pumped} L</td>
-                        <td>${entry.tank_level} L</td>
-                        <td>${entry.timestamp}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-
-                    if (!keyfobFuel[entry.keyfob_id]) {
-                        keyfobFuel[entry.keyfob_id] = 0;
-                    }
-                    keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
-
-                    timestamps.push(entry.timestamp);
-                    fuelAmounts.push(entry.fuel_pumped);
-                    tankLevels.push(entry.tank_level);
-                }
+                timestamps.push(entry.timestamp);
+                tankLevels.push(entry.tank_level);
             });
 
-            updateCharts(timestamps, fuelAmounts, tankLevels);
-            updateBarChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
+            updateTankChart(timestamps, tankLevels);
         }
 
-        function updateCharts(timestamps, fuelAmounts, tankLevels) {
-            fuelChart.data.labels = timestamps;
-            fuelChart.data.datasets[0].data = fuelAmounts;
-            fuelChart.update();
-
+        function updateTankChart(timestamps, tankLevels) {
             tankChart.data.labels = timestamps;
             tankChart.data.datasets[0].data = tankLevels;
             tankChart.update();
         }
 
-        function updateBarChart(keyfobs, fuelAmounts) {
-            keyfobChart.data.labels = keyfobs;
-            keyfobChart.data.datasets[0].data = fuelAmounts;
-            keyfobChart.update();
-        }
-
-        window.onload = fetchDummyData;
-
-        const fuelCtx = document.getElementById('fuelChart').getContext('2d');
-        const fuelChart = new Chart(fuelCtx, {
-            type: 'line',
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+        window.onload = fetchTankData;
 
         const tankCtx = document.getElementById('tankChart').getContext('2d');
         const tankChart = new Chart(tankCtx, {
             type: 'line',
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        const keyfobCtx = document.getElementById('keyfobChart').getContext('2d');
-        const keyfobChart = new Chart(keyfobCtx, {
-            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Tank Level (L)',
+                    data: [],
+                    borderColor: 'green',
+                    fill: false
+                }]
+            },
             options: { responsive: true, maintainAspectRatio: false }
         });
     </script>
