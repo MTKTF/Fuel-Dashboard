@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Transactions</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fuel.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="data.js?v=123"></script>
 </head>
 <body>
+
     <h1>Fuel Transactions</h1>
 
     <div class="nav-container">
@@ -19,24 +20,38 @@
     <div id="keyfob-buttons" class="keyfob-buttons"></div>
 
     <h2>Transactions for: <span id="selectedKeyfob">Select a keyfob</span></h2>
-    <table>
+
+    <!-- Month Selection Dropdown -->
+    <label for="monthSelect">Select Month:</label>
+    <select id="monthSelect"></select>
+
+    <!-- Table with Sorting & Filtering -->
+    <table id="fuelTable">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Keyfob ID</th>
-                <th>Fuel Pumped (L)</th>
-                <th>Mileage (Miles)</th>
+                <th data-column="date" class="sortable">Date</th>
+                <th data-column="keyfob" class="sortable">Keyfob</th>
+                <th data-column="fuel" class="sortable">Fuel Pumped (L)</th>
+                <th data-column="mileage" class="sortable">Mileage (miles)</th>
             </tr>
         </thead>
-        <tbody id="fuel-log"></tbody>
+        <tbody id="fuel-log">
+            <!-- Transaction rows will be inserted dynamically -->
+        </tbody>
     </table>
+
+    <!-- Pagination & CSV Export -->
+    <div class="controls">
+        <button id="prevMonth">Previous Month</button>
+        <button id="nextMonth">Next Month</button>
+        <button id="resetFilters">Reset</button>
+        <button id="exportCSV">Export CSV</button>
+    </div>
 
     <script>
         function populateKeyfobButtons() {
             let keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
 
-            // Sort keyfobs numerically (assuming format is 'Keyfob X')
             keyfobs.sort((a, b) => {
                 const numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
                 const numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
@@ -44,7 +59,7 @@
             });
 
             const buttonContainer = document.getElementById("keyfob-buttons");
-            buttonContainer.innerHTML = ""; // Clear previous buttons
+            buttonContainer.innerHTML = "";
 
             keyfobs.forEach(keyfob => {
                 const button = document.createElement("button");
