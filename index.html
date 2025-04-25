@@ -22,31 +22,71 @@
 
     <p>Current Tank Level: <span id="currentLevel"></span> liters</p>
 
+    <div class="daily-summary">
+        <p>🚛 <strong>Tank Level at 7 AM:</strong> <span id="startLevel"></span> liters</p>
+        <p>🌙 <strong>Tank Level at 7 PM:</strong> <span id="endLevel"></span> liters</p>
+    </div>
+
+    <h2>Today's Transactions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Vehicle Registration</th>
+                <th>Fuel Pumped (L)</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="todays-transactions"></tbody>
+    </table>
+
     <script>
         function updateTankLevel() {
             const data = getDummyData();
             const latestEntry = data[data.length - 1];
             const tankLevel = latestEntry.tank_level;
 
-            const maxTankCapacity = 27000; // Ensure tank level stays below 27,000 liters
+            const maxTankCapacity = 27000; 
             const percentageFill = (tankLevel / maxTankCapacity) * 100;
 
             const fuelElement = document.getElementById("fuelLevel");
             fuelElement.style.height = `${percentageFill}%`;
 
-            // Change color based on level
             if (percentageFill > 50) {
-                fuelElement.style.backgroundColor = "green"; // Safe fuel level
+                fuelElement.style.backgroundColor = "green";
             } else if (percentageFill > 20) {
-                fuelElement.style.backgroundColor = "orange"; // Warning level
+                fuelElement.style.backgroundColor = "orange";
             } else {
-                fuelElement.style.backgroundColor = "red"; // Critical low fuel
+                fuelElement.style.backgroundColor = "red";
             }
 
             document.getElementById("currentLevel").textContent = tankLevel;
         }
 
-        window.onload = updateTankLevel;
+        function getDailyTankLevels() {
+            const today = new Date().toISOString().split('T')[0];
+            const data = getDummyData().filter(entry => entry.timestamp.startsWith(today));
+
+            const startEntry = data.find(entry => new Date(entry.timestamp).getHours() === 7) || { tank_level: "N/A" };
+            const endEntry = data.reverse().find(entry => new Date(entry.timestamp).getHours() === 19) || { tank_level: "N/A" };
+
+            document.getElementById('startLevel').textContent = startEntry.tank_level;
+            document.getElementById('endLevel').textContent = endEntry.tank_level;
+        }
+
+        function getTodaysTransactions() {
+            const today = new Date().toISOString().split('T')[0];
+            const data = getDummyData().filter(entry => entry.timestamp.startsWith(today));
+
+            document.getElementById('todays-transactions').innerHTML = data.map(entry => 
+                `<tr><td>${entry.vehicle_registration}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
+            ).join('');
+        }
+
+        window.onload = () => {
+            updateTankLevel();
+            getDailyTankLevels();
+            getTodaysTransactions();
+        };
     </script>
 </body>
 </html>
