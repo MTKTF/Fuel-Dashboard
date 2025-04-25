@@ -23,7 +23,6 @@ function getDummyData() {
     return fuelData;
 }
 
-// Filter fuel transactions & update summary row
 function filterFuelData(selectedKeyfob) {
     document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
     const selectedMonth = document.getElementById("monthSelect").value;
@@ -43,33 +42,17 @@ function filterFuelData(selectedKeyfob) {
         return `<tr><td>${date}</td><td>${time}</td><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.distance_traveled} miles</td></tr>`;
     }).join('');
 
-    // Calculate Monthly MPG
     const totalFuel = filteredData.reduce((sum, entry) => sum + entry.fuel_pumped, 0);
     const totalMileage = filteredData.reduce((sum, entry) => sum + entry.distance_traveled, 0);
-    const monthlyMPG = totalFuel > 0 ? (totalMileage / totalFuel).toFixed(2) : "N/A";
+    const monthlyMPG = totalFuel > 0 ? +(totalMileage / totalFuel).toFixed(2) : 0;
 
     document.getElementById("totalFuel").textContent = `${totalFuel} L`;
     document.getElementById("totalMileage").textContent = `${totalMileage} miles`;
     document.getElementById("monthlyMPG").textContent = `${monthlyMPG} MPG`;
 
-    // Store & Compare MPG with previous month
-    let previousMPG = localStorage.getItem("previousMPG") || monthlyMPG;
+    const previousMPG = parseFloat(localStorage.getItem("previousMPG")) || 0;
     localStorage.setItem("previousMPG", monthlyMPG);
 
-    let mpgChange = previousMPG > 0 ? (((monthlyMPG - previousMPG) / previousMPG) * 100).toFixed(2) : 0;
-    let mpgChangeColor = mpgChange >= 0 ? "green" : "red";
-    let mpgChangeIndicator = mpgChange >= 0 ? "⬆️" : "⬇️";
-
-    document.getElementById("mpgChange").innerHTML = `(${mpgChange}% ${mpgChangeIndicator})`;
-    document.getElementById("mpgChange").style.color = mpgChangeColor;
-}
-
-// Ensure functionality runs on page load
-window.onload = function () {
-    populateMonthDropdown();
-    populateKeyfobButtons();
-    document.getElementById("monthSelect").addEventListener("change", function() {
-        const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
-        if (selectedKeyfob !== "Select a keyfob") filterFuelData(selectedKeyfob);
-    });
-};
+    const mpgChange = previousMPG > 0 ? (((monthlyMPG - previousMPG) / previousMPG) * 100).toFixed(2) : 0;
+    const mpgChangeColor = mpgChange >= 0 ? "green" : "red";
+    const mpgChange
