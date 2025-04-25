@@ -41,25 +41,27 @@
 
     <script>
         function updateTankLevel() {
-            const data = getDummyData();
-            const latestEntry = data[data.length - 1];
-            const tankLevel = latestEntry.tank_level;
+            setTimeout(() => { // Safari rendering fix
+                const data = getDummyData();
+                const latestEntry = data[data.length - 1];
+                const tankLevel = latestEntry.tank_level;
 
-            const maxTankCapacity = 27000;
-            const percentageFill = (tankLevel / maxTankCapacity) * 100;
+                const maxTankCapacity = 27000;
+                const percentageFill = (tankLevel / maxTankCapacity) * 100;
 
-            const fuelElement = document.getElementById("fuelLevel");
-            fuelElement.style.height = `${percentageFill}%`;
+                const fuelElement = document.getElementById("fuelLevel");
+                fuelElement.style.height = `${percentageFill}%`;
 
-            if (percentageFill > 50) {
-                fuelElement.style.backgroundColor = "green";
-            } else if (percentageFill > 20) {
-                fuelElement.style.backgroundColor = "orange";
-            } else {
-                fuelElement.style.backgroundColor = "red";
-            }
+                if (percentageFill > 50) {
+                    fuelElement.style.backgroundColor = "green";
+                } else if (percentageFill > 20) {
+                    fuelElement.style.backgroundColor = "orange";
+                } else {
+                    fuelElement.style.backgroundColor = "red";
+                }
 
-            document.getElementById("currentLevel").textContent = tankLevel;
+                document.getElementById("currentLevel").textContent = tankLevel;
+            }, 100); // Adds delay for Safari compatibility
         }
 
         function getDailyTankLevels() {
