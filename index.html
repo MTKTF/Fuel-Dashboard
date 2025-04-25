@@ -6,7 +6,7 @@
     <title>Fuel Tank Monitoring</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="data.js"></script>
+    <script src="data.js?v=123"></script>
 </head>
 <body>
     <h1>Fuel Tank Level</h1>
@@ -22,43 +22,5 @@
             <canvas id="tankChart"></canvas>
         </div>
     </div>
-
-    <script>
-        function fetchTankData() {
-            const data = getDummyData();
-            let timestamps = [];
-            let tankLevels = [];
-
-            data.forEach(entry => {
-                timestamps.push(entry.timestamp);
-                tankLevels.push(entry.tank_level);
-            });
-
-            updateTankChart(timestamps, tankLevels);
-        }
-
-        function updateTankChart(timestamps, tankLevels) {
-            tankChart.data.labels = timestamps;
-            tankChart.data.datasets[0].data = tankLevels;
-            tankChart.update();
-        }
-
-        window.onload = fetchTankData;
-
-        const tankCtx = document.getElementById('tankChart').getContext('2d');
-        const tankChart = new Chart(tankCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Tank Level (L)',
-                    data: [],
-                    borderColor: 'green',
-                    fill: false
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    </script>
 </body>
 </html>
