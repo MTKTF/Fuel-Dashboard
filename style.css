@@ -9,7 +9,7 @@ body {
     width: 100%;
 }
 
-/* Navigation */
+/* Navigation Buttons */
 .nav-container {
     display: flex;
     justify-content: center;
@@ -34,43 +34,69 @@ button:hover {
 }
 
 /* Chart Container */
-.chart-container {
+.container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    width: 95%;
+    margin: auto;
+    gap: 20px;
 }
 
-/* Smooth fade-in effect */
+/* Ensure Graphs Fit the Screen */
+.chart-container {
+    flex: 1;
+    max-width: 900px;
+    min-width: 300px;
+    margin: 10px;
+}
+
+/* Properly Scale Charts */
 canvas {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    width: 100% !important;
+    max-width: 900px !important;
+    height: auto !important;
+    display: block;
+    margin: auto;
+    padding: 10px;
+    border-radius: 10px;
 }
 
-/* Dropdown Styling */
-.filter-container {
-    margin-top: 15px;
-    text-align: center;
+/* Table Styling */
+.table-container {
+    flex: 1;
+    max-width: 900px;
+    min-width: 300px;
 }
 
-label {
-    font-size: 16px;
-    margin-right: 8px;
+table {
+    width: 100%;
+    max-width: 95%;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: #16213e;
 }
 
-select {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    cursor: pointer;
+th, td {
+    padding: 12px;
+    border: 1px solid #0f3460;
+    font-size: 14px;
 }
 
-/* Responsive Adjustments */
+th {
+    background-color: #0f3460;
+}
+
+/* Mobile Adjustments */
 @media (max-width: 768px) {
-    .nav-container {
+    .container {
         flex-direction: column;
         align-items: center;
+    }
+
+    h1 {
+        font-size: 20px;
     }
 
     button {
@@ -78,8 +104,12 @@ select {
         max-width: 200px;
     }
 
-    select {
-        width: 100%;
-        max-width: 200px;
+    th, td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    canvas {
+        max-width: 400px;
     }
 }
