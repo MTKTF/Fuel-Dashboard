@@ -25,6 +25,27 @@ function getDummyData() {
     return fuelData;
 }
 
+function getLiveTankData() {
+    const now = new Date();
+    const fuelLevel = Math.floor(Math.random() * 27000); // Simulate current fuel level (0–27000)
+
+    const startLevel = Math.floor(Math.random() * 10000 + 10000); // Random morning value
+    const endLevel = Math.floor(Math.random() * 10000 + 10000);   // Random evening value
+
+    const today = now.toISOString().split('T')[0];
+
+    const todaysTransactions = getDummyData().filter(entry =>
+        entry.timestamp.startsWith(today)
+    );
+
+    return {
+        tank_level: fuelLevel,
+        start_level: startLevel,
+        end_level: endLevel,
+        transactions: todaysTransactions
+    };
+}
+
 function filterFuelData(selectedKeyfob) {
     document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
     const selectedMonth = document.getElementById("monthSelect").value;
