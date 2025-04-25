@@ -16,54 +16,53 @@
         <button onclick="window.location.href='report.html'">📊 Reports</button>
     </div>
 
-    <div class="filter-container">
-        <label for="vehicle-filter">Select Vehicle Registration:</label>
-        <select id="vehicle-filter" onchange="filterFuelData()">
-            <option value="">All Vehicles</option>
-        </select>
-    </div>
+    <div id="vehicle-buttons" class="vehicle-buttons"></div>
 
-    <div class="chart-container">
-        <canvas id="fuelChart"></canvas>
-    </div>
-
+    <h2>Transactions for: <span id="selectedVehicle">Select a vehicle</span></h2>
     <table>
         <thead>
             <tr>
+                <th>Date</th>
+                <th>Time</th>
                 <th>Vehicle Registration</th>
                 <th>Fuel Pumped (L)</th>
-                <th>Timestamp</th>
+                <th>Mileage (Miles)</th>
             </tr>
         </thead>
         <tbody id="fuel-log"></tbody>
     </table>
 
     <script>
-        function populateVehicleDropdown() {
+        function populateVehicleButtons() {
             const vehicles = [...new Set(getDummyData().map(entry => entry.vehicle_registration))];
-            const dropdown = document.getElementById("vehicle-filter");
+            const buttonContainer = document.getElementById("vehicle-buttons");
 
             vehicles.forEach(vehicle => {
-                const option = document.createElement("option");
-                option.value = vehicle;
-                option.textContent = vehicle;
-                dropdown.appendChild(option);
+                const button = document.createElement("button");
+                button.textContent = vehicle;
+                button.onclick = () => filterFuelData(vehicle);
+                buttonContainer.appendChild(button);
             });
         }
 
-        function filterFuelData() {
-            const selectedVehicle = document.getElementById("vehicle-filter").value;
-            const filteredData = getDummyData().filter(entry => selectedVehicle === "" || entry.vehicle_registration === selectedVehicle);
+        function filterFuelData(vehicle) {
+            document.getElementById("selectedVehicle").textContent = vehicle;
 
-            document.getElementById('fuel-log').innerHTML = filteredData.map(entry => 
-                `<tr><td>${entry.vehicle_registration}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
-            ).join('');
+            const filteredData = getDummyData().filter(entry => entry.vehicle_registration === vehicle);
+
+            document.getElementById('fuel-log').innerHTML = filteredData.map(entry => {
+                const [date, time] = entry.timestamp.split(" ");
+                return `<tr>
+                    <td>${date}</td>
+                    <td>${time}</td>
+                    <td>${entry.vehicle_registration}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.distance_traveled} miles</td>
+                </tr>`;
+            }).join('');
         }
 
-        window.onload = () => {
-            populateVehicleDropdown();
-            filterFuelData();
-        };
+        window.onload = populateVehicleButtons;
     </script>
 </body>
 </html>
