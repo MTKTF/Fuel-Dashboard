@@ -16,57 +16,37 @@
         <button onclick="window.location.href='report.html'">📊 Reports</button>
     </div>
 
-    <div class="chart-container">
-        <canvas id="tankChart"></canvas>
+    <div class="tank-container">
+        <div class="fuel-level" id="fuelLevel"></div>
     </div>
 
-    <div class="filter-container">
-        <label for="date-range">Filter Tank Level:</label>
-        <select id="date-range" onchange="filterTankData()">
-            <option value="1">Today</option>
-            <option value="7">Last 7 Days</option>
-            <option value="30" selected>Last 30 Days</option>
-        </select>
-    </div>
+    <p>Current Tank Level: <span id="currentLevel"></span> liters</p>
 
     <script>
-        function filterTankData() {
-            const days = parseInt(document.getElementById("date-range").value);
-            const today = new Date();
-            const startDate = new Date();
-            startDate.setDate(today.getDate() - days);
+        function updateTankLevel() {
+            const data = getDummyData();
+            const latestEntry = data[data.length - 1];
+            const tankLevel = latestEntry.tank_level;
 
-            const filteredData = getDummyData().filter(entry => {
-                const entryDate = new Date(entry.timestamp);
-                return entryDate >= startDate && entryDate <= today;
-            });
+            const maxTankCapacity = 27000; // Ensure tank level stays below 27,000 liters
+            const percentageFill = (tankLevel / maxTankCapacity) * 100;
 
-            updateTankChart(filteredData);
+            const fuelElement = document.getElementById("fuelLevel");
+            fuelElement.style.height = `${percentageFill}%`;
+
+            // Change color based on level
+            if (percentageFill > 50) {
+                fuelElement.style.backgroundColor = "green"; // Safe fuel level
+            } else if (percentageFill > 20) {
+                fuelElement.style.backgroundColor = "orange"; // Warning level
+            } else {
+                fuelElement.style.backgroundColor = "red"; // Critical low fuel
+            }
+
+            document.getElementById("currentLevel").textContent = tankLevel;
         }
 
-        function updateTankChart(filteredData) {
-            const timestamps = filteredData.map(entry => entry.timestamp);
-            const tankLevels = filteredData.map(entry => entry.tank_level);
-
-            const canvas = document.getElementById('tankChart');
-            canvas.style.opacity = 0; // Start fade-out
-
-            setTimeout(() => {
-                tankChart.data.labels = timestamps;
-                tankChart.data.datasets[0].data = tankLevels;
-                tankChart.update();
-                canvas.style.opacity = 1; // Fade-in after update
-            }, 300);
-        }
-
-        const tankCtx = document.getElementById('tankChart').getContext('2d');
-        const tankChart = new Chart(tankCtx, {
-            type: 'line',
-            data: { labels: [], datasets: [{ label: 'Tank Level (L)', data: [], borderColor: 'green', fill: false }] },
-            options: { responsive: true }
-        });
-
-        window.onload = filterTankData; // Default to Last 30 Days
+        window.onload = updateTankLevel;
     </script>
 </body>
 </html>
