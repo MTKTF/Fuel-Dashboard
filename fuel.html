@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Transactions</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data.js"></script>
+</head>
+<body>
+    <h1>Fuel Pumped Per Keyfob</h1>
+
+    <button onclick="window.location.href='index.html'">Back to Home</button>
+
+    <canvas id="fuelChart"></canvas>
+    <canvas id="keyfobChart"></canvas>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Keyfob ID</th>
+                <th>Fuel Pumped</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="fuel-log"></tbody>
+    </table>
+
+    <script>
+        function fetchFuelData() {
+            const data = getDummyData();
+            let timestamps = [];
+            let fuelAmounts = [];
+            let keyfobFuel = {};
+
+            const tableBody = document.getElementById('fuel-log');
+            tableBody.innerHTML = "";
+
+            data.forEach(entry => {
+                const row = `<tr>
+                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.timestamp}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+
+                if (!keyfobFuel[entry.keyfob_id]) {
+                    keyfobFuel[entry.keyfob_id] = 0;
+                }
+                keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
+
+                timestamps.push(entry.timestamp);
+                fuelAmounts.push(entry.fuel_pumped);
+            });
+
+            updateFuelChart(timestamps, fuelAmounts);
+            updateKeyfobChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
+        }
+
+        function updateFuelChart(timestamps, fuelAmounts) {
+            fuelChart.data.labels = timestamps;
+            fuelChart.data.datasets[0].data = fuelAmounts;
+            fuelChart.update();
+        }
+
+        function updateKeyfobChart(keyfobs, fuelAmounts) {
+            keyfobChart.data.labels = keyfobs;
+            keyfobChart.data.datasets[0].data = fuelAmounts;
+            keyfobChart.update();
+        }
+
+        window.onload = fetchFuelData;
+
+        const fuelCtx = document.getElementById('fuelChart').getContext('2d');
+        const fuelChart = new Chart(fuelCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Fuel Pumped (L)',
+                    data: [],
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        const keyfobCtx = document.getElementById('keyfobChart').getContext('2d');
+        const keyfobChart = new Chart(keyfobCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Fuel Pumped Per Keyfob (L)',
+                    data: [],
+                    backgroundColor: 'orange'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    </script>
+</body>
+</html>
