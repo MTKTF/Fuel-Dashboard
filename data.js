@@ -84,7 +84,43 @@ function populateKeyfobButtons() {
     });
 }
 
+// Filter fuel transactions based on selected keyfob & month
+function filterFuelData(selectedKeyfob) {
+    document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
+
+    const selectedMonth = document.getElementById("monthSelect").value;
+    let filteredData = getDummyData().filter(entry => entry.keyfob_id === selectedKeyfob);
+
+    if (selectedMonth !== "all") {
+        filteredData = filteredData.filter(entry => {
+            const date = new Date(entry.timestamp.split(" ")[0]);
+            return date.toLocaleString('default', { month: 'long' }) === selectedMonth;
+        });
+    }
+
+    // Sort transactions by date (latest first)
+    filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    document.getElementById('fuel-log').innerHTML = filteredData.map(entry => {
+        const [date, time] = entry.timestamp.split(" ");
+        return `<tr>
+            <td>${date}</td>
+            <td>${time}</td>
+            <td>${entry.keyfob_id}</td>
+            <td>${entry.fuel_pumped} L</td>
+            <td>${entry.distance_traveled} miles</td>
+        </tr>`;
+    }).join('');
+}
+
+// Ensure functionality runs on page load
 window.onload = function () {
     populateMonthDropdown();
     populateKeyfobButtons();
+    document.getElementById("monthSelect").addEventListener("change", function() {
+        const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
+        if (selectedKeyfob !== "Select a keyfob") {
+            filterFuelData(selectedKeyfob);
+        }
+    });
 };
