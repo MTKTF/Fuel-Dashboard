@@ -41,6 +41,7 @@
 
     <script>
         function updateTankLevel() {
+         setTimeout(() => { // Safari rendering fix
              const data = getDummyData();
              const latestEntry = data[data.length - 1];
              const tankLevel = latestEntry.tank_level;
