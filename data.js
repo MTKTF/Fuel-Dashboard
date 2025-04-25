@@ -35,26 +35,22 @@ function getDummyData() {
     return fuelData;
 }
 
+// Populate month dropdown dynamically
 function populateMonthDropdown() {
     const monthSelect = document.getElementById("monthSelect");
     const fuelData = getDummyData();
 
-    // Extract unique months from transaction timestamps
     const months = [...new Set(fuelData.map(entry => {
         const date = new Date(entry.timestamp.split(" ")[0]);
-        return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+        return date.toLocaleString('default', { month: 'long' });
     }))];
 
-    // Sort months in descending order (latest first)
-    months.sort((a, b) => new Date(`1 ${b}`) - new Date(`1 ${a}`));
+    const monthOrder = {
+        "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+        "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+    };
 
-    // Populate dropdown with sorted months
-    monthSelect.innerHTML = ""; // Clear existing options
-
-    const showAllOption = document.createElement("option");
-    showAllOption.value = "all";
-    showAllOption.textContent = "Show All Months";
-    monthSelect.appendChild(showAllOption);
+    months.sort((a, b) => monthOrder[a] - monthOrder[b]);
 
     months.forEach(month => {
         const option = document.createElement("option");
@@ -63,10 +59,30 @@ function populateMonthDropdown() {
         monthSelect.appendChild(option);
     });
 
-    // Preselect the current month
-    const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-    monthSelect.value = months.includes(currentMonth) ? currentMonth : months[0]; // Latest month first
+    monthSelect.value = months[months.length - 1]; // Preselect latest month
 }
+
+// Populate keyfob buttons dynamically
+function populateKeyfobButtons() {
+    const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+
+    keyfobs.sort((a, b) => {
+        const numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
+        const numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
+        return numA - numB;
+    });
+
+    const buttonContainer = document.getElementById("keyfob-buttons");
+    buttonContainer.innerHTML = ""; // Clear any previous buttons
+
+    keyfobs.forEach(keyfob => {
+        const button = document.createElement("button");
+        button.textContent = keyfob;
+        button.onclick = () => filterFuelData(keyfob);
+        buttonContainer.appendChild(button);
+    });
+}
+
 
 // Ensure functionality runs on page load
 window.onload = function () {
