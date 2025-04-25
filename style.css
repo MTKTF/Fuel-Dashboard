@@ -9,13 +9,7 @@ body {
     width: 100%;
 }
 
-/* Title Styling */
-h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-/* Navigation Buttons */
+/* Navigation */
 .nav-container {
     display: flex;
     justify-content: center;
@@ -39,84 +33,44 @@ button:hover {
     background-color: #ff2e63;
 }
 
-/* Grid Layout for Charts & Tables */
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    width: 95%;
-    margin: auto;
-    gap: 20px;
-}
-
-/* Ensure Graphs Fit the Screen at 100% Zoom */
+/* Chart Container */
 .chart-container {
-    flex: 1;
-    max-width: 900px;
-    min-width: 300px;
-    margin: 10px;
-}
-
-/* Properly Scale Charts */
-canvas {
-    width: 100% !important;
-    max-width: 900px !important;
-    height: auto !important;
-    display: block;
-    margin: auto;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-/* Table Styling */
-.table-container {
-    flex: 1;
-    max-width: 900px;
-    min-width: 300px;
-}
-
-table {
-    width: 100%;
-    max-width: 95%;
-    margin: auto;
-    border-collapse: collapse;
-    background-color: #16213e;
-    overflow-x: auto;
-}
-
-th, td {
-    padding: 12px;
-    border: 1px solid #0f3460;
-    font-size: 14px;
-}
-
-th {
-    background-color: #0f3460;
-}
-
-/* Filter Controls */
-.filter-container {
-    margin: 20px auto;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 10px;
 }
 
-.preset-buttons {
-    display: flex;
-    gap: 10px;
+/* Smooth fade-in effect */
+canvas {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
 
-/* Mobile Adjustments */
+/* Dropdown Styling */
+.filter-container {
+    margin-top: 15px;
+    text-align: center;
+}
+
+label {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+select {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .container {
+    .nav-container {
         flex-direction: column;
         align-items: center;
-    }
-
-    h1 {
-        font-size: 20px;
     }
 
     button {
@@ -124,22 +78,8 @@ th {
         max-width: 200px;
     }
 
-    th, td {
-        font-size: 12px;
-        padding: 8px;
-    }
-
-    canvas {
-        max-width: 400px;
-    }
-
-    .filter-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .preset-buttons {
-        flex-direction: column;
-        align-items: center;
+    select {
+        width: 100%;
+        max-width: 200px;
     }
 }
