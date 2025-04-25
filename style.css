@@ -95,6 +95,19 @@ th {
     background-color: #0f3460;
 }
 
+/* Filter Controls */
+.filter-container {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .container {
@@ -118,5 +131,15 @@ th {
 
     canvas {
         max-width: 400px;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .preset-buttons {
+        flex-direction: column;
+        align-items: center;
     }
 }
