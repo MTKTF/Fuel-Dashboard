@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Usage Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data.js"></script>
+</head>
+<body>
+    <h1>Fuel Usage Report</h1>
+
+    <label for="dateFilter">Select Date:</label>
+    <input type="date" id="dateFilter" onchange="fetchReportData()">
+
+    <canvas id="weeklyUsageChart"></canvas>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Keyfob ID</th>
+                <th>Fuel Pumped</th>
+                <th>Tank Level</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="reportLog"></tbody>
+    </table>
+
+    <script>
+        function fetchReportData() {
+            const selectedDate = document.getElementById("dateFilter").value;
+            const data = getDummyData().filter(entry => entry.timestamp.includes(selectedDate));
+
+            const tableBody = document.getElementById('reportLog');
+            tableBody.innerHTML = "";
+
+            let keyfobFuel = {};
+
+            data.forEach(entry => {
+                const row = `<tr>
+                    <td>${entry.keyfob_id}</td>
+                    <td>${entry.fuel_pumped} L</td>
+                    <td>${entry.tank_level} L</td>
+                    <td>${entry.timestamp}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+
+                if (!keyfobFuel[entry.keyfob_id]) {
+                    keyfobFuel[entry.keyfob_id] = 0;
+                }
+                keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
+            });
+
+            updateReportChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
+        }
+
+        function updateReportChart(keyfobs, fuelAmounts) {
+            reportChart.data.labels = keyfobs;
+            reportChart.data.datasets[0].data = fuelAmounts;
+            reportChart.update();
+        }
+
+        const reportCtx = document.getElementById('weeklyUsageChart').getContext('2d');
+        const reportChart = new Chart(reportCtx, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Fuel Pumped Per Keyfob (L) Over Time', data: [], backgroundColor: 'purple' }] }
+        });
+
+        window.onload = fetchReportData;
+    </script>
+</body>
+</html>
