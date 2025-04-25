@@ -35,43 +35,37 @@ function getDummyData() {
     return fuelData;
 }
 
-// Populate month dropdown dynamically
 function populateMonthDropdown() {
     const monthSelect = document.getElementById("monthSelect");
     const fuelData = getDummyData();
-    const monthlyConsumption = JSON.parse(localStorage.getItem("monthlyConsumption")) || {};
 
+    // Extract unique months from transaction timestamps
     const months = [...new Set(fuelData.map(entry => {
         const date = new Date(entry.timestamp.split(" ")[0]);
         return date.toLocaleString('default', { month: 'long', year: 'numeric' });
     }))];
 
-    months.sort((a, b) => new Date(`1 ${a}`) - new Date(`1 ${b}`));
+    // Sort months in descending order (latest first)
+    months.sort((a, b) => new Date(`1 ${b}`) - new Date(`1 ${a}`));
 
-    let highestMonth = "";
-    let highestFuel = 0;
+    // Populate dropdown with sorted months
+    monthSelect.innerHTML = ""; // Clear existing options
 
-    // Find the month with highest fuel consumption
-    for (const [month, fuel] of Object.entries(monthlyConsumption)) {
-        if (fuel > highestFuel) {
-            highestFuel = fuel;
-            highestMonth = month;
-        }
-    }
+    const showAllOption = document.createElement("option");
+    showAllOption.value = "all";
+    showAllOption.textContent = "Show All Months";
+    monthSelect.appendChild(showAllOption);
 
     months.forEach(month => {
         const option = document.createElement("option");
         option.value = month;
         option.textContent = month;
-        if (month === highestMonth) {
-            option.style.color = "red"; // Highlight highest consumption month
-        }
         monthSelect.appendChild(option);
     });
 
     // Preselect the current month
     const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-    monthSelect.value = months.includes(currentMonth) ? currentMonth : months[months.length - 1];
+    monthSelect.value = months.includes(currentMonth) ? currentMonth : months[0]; // Latest month first
 }
 
 // Ensure functionality runs on page load
