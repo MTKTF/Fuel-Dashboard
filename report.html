@@ -11,47 +11,58 @@
 <body>
     <h1>Fuel Usage Report</h1>
 
-    <div class="nav-container">
+    <nav>
         <button onclick="window.location.href='index.html'">🏠 Home</button>
         <button onclick="window.location.href='fuel.html'">⛽ Fuel Transactions</button>
-        <button onclick="window.location.href='report.html'">📊 Reports</button>
-    </div>
+    </nav>
 
-    <div class="filter-container">
-        <label for="start-date">Start Date:</label>
-        <input type="date" id="start-date">
+    <canvas id="weeklyUsageChart"></canvas>
 
-        <label for="end-date">End Date:</label>
-        <input type="date" id="end-date">
+    <table>
+        <thead>
+            <tr>
+                <th>Keyfob ID</th>
+                <th>Fuel Pumped (L)</th>
+                <th>Tank Level (L)</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="reportLog"></tbody>
+    </table>
 
-        <button onclick="fetchFilteredReport()">🔍 Filter Report</button>
+    <button onclick="exportToCSV()">📂 Export to CSV</button>
 
-        <div class="preset-buttons">
-            <button onclick="setPresetDateRange(7)">Last 7 Days</button>
-            <button onclick="setPresetDateRange(30)">Last 30 Days</button>
-            <button onclick="setPresetDateRange(90)">Last 90 Days</button>
-        </div>
-    </div>
+    <script>
+        function fetchReportData() {
+            const data = getDummyData();
+            const keyfobs = data.map(entry => entry.keyfob_id);
+            const fuelAmounts = data.map(entry => entry.fuel_pumped);
+            
+            new Chart(document.getElementById('weeklyUsageChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: keyfobs, datasets: [{ label: 'Fuel Pumped (L)', data: fuelAmounts, backgroundColor: 'purple' }] },
+                options: { responsive: true }
+            });
 
-    <button onclick="exportToCSV()">📂 Export Report to CSV</button>
+            document.getElementById('reportLog').innerHTML = data.map(entry => 
+                `<tr><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.tank_level} L</td><td>${entry.timestamp}</td></tr>`
+            ).join('');
+        }
 
-    <div class="container">
-        <div class="chart-container">
-            <canvas id="weeklyUsageChart"></canvas>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Keyfob ID</th>
-                        <th>Fuel Pumped</th>
-                        <th>Tank Level</th>
-                        <th>Timestamp</th>
-                    </tr>
-                </thead>
-                <tbody id="reportLog"></tbody>
-            </table>
-        </div>
-    </div>
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Keyfob ID,Fuel Pumped (L),Tank Level (L),Timestamp\n";
+            csvContent += Array.from(document.querySelectorAll("#reportLog tr")).map(row => 
+                Array.from(row.children).map(cell => cell.textContent).join(",")
+            ).join("\n");
+
+            const link = document.createElement("a");
+            link.href = encodeURI(csvContent);
+            link.download = "fuel_report.csv";
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        window.onload = fetchReportData;
+    </script>
 </body>
 </html>
