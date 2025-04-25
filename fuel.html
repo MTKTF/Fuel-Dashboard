@@ -6,7 +6,7 @@
     <title>Fuel Transactions</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="data.js?v=123"></script>
+    <script src="data.js?v=124"></script>
 </head>
 <body>
 
@@ -47,6 +47,13 @@
                 <td id="totalFuel">0 L</td>
                 <td id="totalMileage">0 miles</td>
             </tr>
+            <tr>
+                <td colspan="3"><strong>MPG:</strong></td>
+                <td colspan="2">
+                    <span id="monthlyMPG">0 MPG</span>
+                    <span id="mpgChange" style="margin-left: 10px;"></span>
+                </td>
+            </tr>
         </tfoot>
     </table>
 
@@ -61,7 +68,11 @@
             let uniqueKeyfobs = [...new Set(fuelData.map(entry => entry.keyfob_id))];
 
             // Sort keyfobs numerically
-            uniqueKeyfobs.sort((a, b) => Number(a) - Number(b));
+            uniqueKeyfobs.sort((a, b) => {
+                const numA = parseInt(a.replace(/\D/g, ""));
+                const numB = parseInt(b.replace(/\D/g, ""));
+                return numA - numB;
+            });
 
             // Structure keyfobs into rows of 5
             keyfobContainer.innerHTML = ""; // Clear previous buttons
@@ -85,17 +96,14 @@
             const monthSelect = document.getElementById("monthSelect");
             const fuelData = getDummyData();
 
-            // Extract unique months from transaction timestamps
             const months = [...new Set(fuelData.map(entry => {
                 const date = new Date(entry.timestamp.split(" ")[0]);
                 return date.toLocaleString('default', { month: 'long', year: 'numeric' });
             }))];
 
-            // Sort months in descending order (latest first)
             months.sort((a, b) => new Date(`1 ${b}`) - new Date(`1 ${a}`));
 
-            // Populate dropdown with sorted months
-            monthSelect.innerHTML = ""; // Clear existing options
+            monthSelect.innerHTML = "";
 
             const showAllOption = document.createElement("option");
             showAllOption.value = "all";
@@ -109,37 +117,14 @@
                 monthSelect.appendChild(option);
             });
 
-            // Preselect the current month
             const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-            monthSelect.value = months.includes(currentMonth) ? currentMonth : months[0]; // Latest month first
-        }
-
-        function filterFuelData(selectedKeyfob) {
-            document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
-            const selectedMonth = document.getElementById("monthSelect").value;
-            const fuelData = getDummyData();
-
-            let filteredData = fuelData.filter(entry => entry.keyfob_id === selectedKeyfob);
-
-            if (selectedMonth !== "all") {
-                filteredData = filteredData.filter(entry => {
-                    const entryMonth = new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long', year: 'numeric' });
-                    return entryMonth === selectedMonth;
-                });
-            }
-
-            document.getElementById("fuel-log").innerHTML = filteredData.map(entry =>
-                `<tr><td>${entry.timestamp.split(" ")[0]}</td><td>${entry.timestamp.split(" ")[1]}</td><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.mileage} miles</td></tr>`
-            ).join('');
-
-            document.getElementById("totalFuel").textContent = `${filteredData.reduce((sum, entry) => sum + entry.fuel_pumped, 0)} L`;
-            document.getElementById("totalMileage").textContent = `${filteredData.reduce((sum, entry) => sum + entry.mileage, 0)} miles`;
+            monthSelect.value = months.includes(currentMonth) ? currentMonth : months[0];
         }
 
         window.onload = function () {
             populateKeyfobButtons();
             populateMonthDropdown();
-            document.getElementById("monthSelect").addEventListener("change", function() {
+            document.getElementById("monthSelect").addEventListener("change", function () {
                 const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
                 if (selectedKeyfob !== "Select a keyfob") filterFuelData(selectedKeyfob);
             });
