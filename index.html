@@ -43,47 +43,45 @@
         <tbody id="todays-transactions"></tbody>
     </table>
 
-    <script>
-        function updateTankLevel() {
-            setTimeout(() => {
-                const data = getDummyData();
-                const latestEntry = data[data.length - 1];
-                const tankLevel = latestEntry.tank_level || 0;
+<script>
+    function updateTankLevel() {
+        setTimeout(() => {
+            const data = getLiveTankData();
 
-                const maxTankCapacity = 27000;
-                const percentageFill = (tankLevel / maxTankCapacity) * 100;
+            const maxTankCapacity = 27000;
+            const percentageFill = (data.tank_level / maxTankCapacity) * 100;
 
-                const fuelElement = document.getElementById("fuelLevel");
-                fuelElement.style.height = `${percentageFill}%`;
-                document.getElementById("fuelPercentage").textContent = `${percentageFill.toFixed(1)}%`;
+            const fuelElement = document.getElementById("fuelLevel");
+            fuelElement.style.height = `${percentageFill}%`;
+            document.getElementById("fuelPercentage").textContent = `${percentageFill.toFixed(1)}%`;
+            fuelElement.style.transition = "height 0.5s ease-in-out";
 
-                // Smooth animation
-                fuelElement.style.transition = "height 0.5s ease-in-out";
+            document.getElementById("currentLevel").textContent = data.tank_level;
+            document.getElementById("startLevel").textContent = data.start_level;
+            document.getElementById("endLevel").textContent = data.end_level;
+        }, 100);
+    }
 
-                document.getElementById("currentLevel").textContent = tankLevel;
-            }, 100);
-        }
+    function getTodaysTransactions() {
+        const data = getLiveTankData().transactions;
 
-        function getTodaysTransactions() {
-            const today = new Date().toISOString().split('T')[0];
-            const data = getDummyData().filter(entry => entry.timestamp.startsWith(today));
+        document.getElementById('todays-transactions').innerHTML = data.map(entry =>
+            `<tr><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
+        ).join('');
+    }
 
-            document.getElementById('todays-transactions').innerHTML = data.map(entry => 
-                `<tr><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
-            ).join('');
-        }
+    // Auto-refresh tank level & transactions every 5 minutes
+    setInterval(() => {
+        updateTankLevel();
+        getTodaysTransactions();
+    }, 300000);
 
-        // Auto-refresh tank level & transactions every 5 minutes
-        setInterval(() => {
-            updateTankLevel();
-            getTodaysTransactions();
-        }, 300000);
+    window.onload = () => {
+        updateTankLevel();
+        getTodaysTransactions();
+    };
+</script>
 
-        window.onload = () => {
-            updateTankLevel();
-            getTodaysTransactions();
-        };
-    </script>
 
     <style>
         .tank-wrapper {
