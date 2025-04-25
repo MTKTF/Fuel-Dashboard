@@ -11,12 +11,21 @@
 <body>
     <h1>Fuel Transactions</h1>
 
-    <nav>
+    <div class="nav-container">
         <button onclick="window.location.href='index.html'">🏠 Home</button>
         <button onclick="window.location.href='report.html'">📊 Reports</button>
-    </nav>
+    </div>
 
-    <canvas id="fuelChart"></canvas>
+    <div class="filter-container">
+        <label for="keyfob-filter">Select Keyfob:</label>
+        <select id="keyfob-filter" onchange="filterFuelData()">
+            <option value="">All Keyfobs</option>
+        </select>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="fuelChart"></canvas>
+    </div>
 
     <table>
         <thead>
@@ -30,23 +39,31 @@
     </table>
 
     <script>
-        function fetchFuelData() {
-            const data = getDummyData();
-            const timestamps = data.map(entry => entry.timestamp);
-            const fuelAmounts = data.map(entry => entry.fuel_pumped);
-            
-            new Chart(document.getElementById('fuelChart').getContext('2d'), {
-                type: 'bar',
-                data: { labels: timestamps, datasets: [{ label: 'Fuel Pumped (L)', data: fuelAmounts, backgroundColor: 'blue' }] },
-                options: { responsive: true }
-            });
+        function populateKeyfobDropdown() {
+            const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+            const dropdown = document.getElementById("keyfob-filter");
 
-            document.getElementById('fuel-log').innerHTML = data.map(entry => 
+            keyfobs.forEach(keyfob => {
+                const option = document.createElement("option");
+                option.value = keyfob;
+                option.textContent = keyfob;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function filterFuelData() {
+            const selectedKeyfob = document.getElementById("keyfob-filter").value;
+            const filteredData = getDummyData().filter(entry => selectedKeyfob === "" || entry.keyfob_id === selectedKeyfob);
+
+            document.getElementById('fuel-log').innerHTML = filteredData.map(entry => 
                 `<tr><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
             ).join('');
         }
 
-        window.onload = fetchFuelData;
+        window.onload = () => {
+            populateKeyfobDropdown();
+            filterFuelData();
+        };
     </script>
 </body>
 </html>
