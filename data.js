@@ -17,6 +17,16 @@ function getDummyData() {
 
         // Only generate data for weekdays (Monday = 1, Friday = 5)
         if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            // Capture the fuel level at 7 AM
+            const morningTransaction = {
+                keyfob_id: "N/A", // No transaction at 7 AM
+                fuel_pumped: 0,
+                distance_traveled: 0,
+                timestamp: formatDateTime(currentDate, "07:00:00"),
+                tank_level: tankLevel // Tank level at 7 AM
+            };
+            fuelData.push(morningTransaction);
+
             for (let transaction = 0; transaction < 20; transaction++) {
                 const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
                 const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
@@ -34,10 +44,20 @@ function getDummyData() {
                     keyfob_id: randomKeyfob,
                     fuel_pumped: randomFuel,
                     distance_traveled: randomDistance,
-                    timestamp: currentDate.toISOString().split('T')[0] + " " + currentDate.toLocaleTimeString(),
-                    tank_level: tankLevel // Track tank level
+                    timestamp: formatDateTime(currentDate, getRandomTime()),
+                    tank_level: tankLevel // Track tank level after transaction
                 });
             }
+
+            // Capture the fuel level at 7 PM
+            const eveningTransaction = {
+                keyfob_id: "N/A", // No transaction at 7 PM
+                fuel_pumped: 0,
+                distance_traveled: 0,
+                timestamp: formatDateTime(currentDate, "19:00:00"),
+                tank_level: tankLevel // Tank level at 7 PM
+            };
+            fuelData.push(eveningTransaction);
         }
 
         // Move to the next day
@@ -45,6 +65,19 @@ function getDummyData() {
     }
 
     return fuelData;
+}
+
+// Helper function to format the date and time correctly
+function formatDateTime(date, time) {
+    const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    return `${formattedDate} ${time}`;
+}
+
+// Helper function to generate a random time for transactions (between 8 AM and 6 PM)
+function getRandomTime() {
+    const hour = Math.floor(Math.random() * 10) + 8; // Random hour between 8 AM and 6 PM
+    const minute = Math.floor(Math.random() * 60); // Random minute
+    return `${hour < 10 ? '0' : ''}${hour}:${minute < 10 ? '0' : ''}${minute}:00`;
 }
 
 
