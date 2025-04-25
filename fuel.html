@@ -12,123 +12,33 @@
     <h1>Fuel Pumped Per Keyfob</h1>
 
     <div class="nav-container">
-        <button onclick="window.location.href='index.html'">🏠 Home (Tank Level)</button>
+        <button onclick="window.location.href='index.html'">🏠 Home</button>
         <button onclick="window.location.href='fuel.html'">⛽ Fuel Transactions</button>
         <button onclick="window.location.href='report.html'">📊 Reports</button>
     </div>
 
     <div class="container">
-    <div class="chart-container">
-        <canvas id="fuelChart"></canvas>
+        <div class="chart-container">
+            <canvas id="fuelChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="keyfobChart"></canvas>
+        </div>
     </div>
-    
-    <div class="chart-container">
-        <canvas id="keyfobChart"></canvas>
+
+    <div class="container">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Keyfob ID</th>
+                        <th>Fuel Pumped</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="fuel-log"></tbody>
+            </table>
+        </div>
     </div>
-</div>
-
-<div class="container">
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Keyfob ID</th>
-                    <th>Fuel Pumped</th>
-                    <th>Timestamp</th>
-                </tr>
-            </thead>
-            <tbody id="fuel-log"></tbody>
-        </table>
-    </div>
-</div>
-
-    <canvas id="fuelChart"></canvas>
-    <canvas id="keyfobChart"></canvas>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Keyfob ID</th>
-                <th>Fuel Pumped</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody id="fuel-log"></tbody>
-    </table>
-
-    <script>
-        function fetchFuelData() {
-            const data = getDummyData();
-            if (!data || data.length === 0) {
-                document.getElementById('fuel-log').innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
-                return;
-            }
-
-            let timestamps = [];
-            let fuelAmounts = [];
-            let keyfobFuel = {};
-            const tableBody = document.getElementById('fuel-log');
-            tableBody.innerHTML = "";
-
-            data.forEach(entry => {
-                const row = `<tr>
-                    <td>${entry.keyfob_id}</td>
-                    <td>${entry.fuel_pumped} L</td>
-                    <td>${entry.timestamp}</td>
-                </tr>`;
-                tableBody.innerHTML += row;
-
-                keyfobFuel[entry.keyfob_id] = (keyfobFuel[entry.keyfob_id] || 0) + entry.fuel_pumped;
-                timestamps.push(entry.timestamp);
-                fuelAmounts.push(entry.fuel_pumped);
-            });
-
-            updateFuelChart(timestamps, fuelAmounts);
-            updateKeyfobChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
-        }
-
-        function updateFuelChart(timestamps, fuelAmounts) {
-            fuelChart.data.labels = timestamps;
-            fuelChart.data.datasets[0].data = fuelAmounts;
-            fuelChart.update();
-        }
-
-        function updateKeyfobChart(keyfobs, fuelAmounts) {
-            keyfobChart.data.labels = keyfobs;
-            keyfobChart.data.datasets[0].data = fuelAmounts;
-            keyfobChart.update();
-        }
-
-        window.onload = fetchFuelData;
-
-        const fuelCtx = document.getElementById('fuelChart').getContext('2d');
-        const fuelChart = new Chart(fuelCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Fuel Pumped (L)',
-                    data: [],
-                    borderColor: 'blue',
-                    fill: false
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        const keyfobCtx = document.getElementById('keyfobChart').getContext('2d');
-        const keyfobChart = new Chart(keyfobCtx, {
-            type: 'bar',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Fuel Pumped Per Keyfob (L)',
-                    data: [],
-                    backgroundColor: 'orange'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    </script>
 </body>
 </html>
