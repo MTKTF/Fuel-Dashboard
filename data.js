@@ -36,7 +36,7 @@ function getDummyData() {
     return fuelData;
 }
 
-// Populate month dropdown
+// Populate month dropdown dynamically
 function populateMonthDropdown() {
     const monthSelect = document.getElementById("monthSelect");
     const fuelData = getDummyData();
@@ -63,4 +63,28 @@ function populateMonthDropdown() {
     monthSelect.value = months[months.length - 1]; // Preselect latest month
 }
 
-window.onload = populateMonthDropdown;
+// Populate keyfob buttons dynamically
+function populateKeyfobButtons() {
+    const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+
+    keyfobs.sort((a, b) => {
+        const numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
+        const numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
+        return numA - numB;
+    });
+
+    const buttonContainer = document.getElementById("keyfob-buttons");
+    buttonContainer.innerHTML = ""; // Clear any previous buttons
+
+    keyfobs.forEach(keyfob => {
+        const button = document.createElement("button");
+        button.textContent = keyfob;
+        button.onclick = () => filterFuelData(keyfob);
+        buttonContainer.appendChild(button);
+    });
+}
+
+window.onload = function () {
+    populateMonthDropdown();
+    populateKeyfobButtons();
+};
