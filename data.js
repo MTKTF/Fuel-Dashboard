@@ -6,8 +6,8 @@ function getDummyData() {
     for (let week = 0; week < 52; week++) {
         for (let entry = 0; entry < 60; entry++) {
             const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-            const randomFuel = Math.floor(Math.random() * 200) + 50; // Ensure valid fuel values
-            const randomDistance = Math.floor(Math.random() * 100) + 20; // Ensure valid mileage
+            const randomFuel = Math.floor(Math.random() * 200) + 50;
+            const randomDistance = Math.floor(Math.random() * 100) + 20;
             const transactionDate = new Date(today);
             transactionDate.setDate(today.getDate() - (week * 5 + Math.floor(Math.random() * 5)));
 
@@ -21,37 +21,6 @@ function getDummyData() {
     }
 
     return fuelData;
-}
-
-// Populate month dropdown dynamically
-function populateMonthDropdown() {
-    const monthSelect = document.getElementById("monthSelect");
-    const fuelData = getDummyData();
-    const months = [...new Set(fuelData.map(entry => new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long' })))];
-
-    months.sort((a, b) => new Date(`1 ${a} 2025`) - new Date(`1 ${b} 2025`));
-    months.forEach(month => {
-        const option = document.createElement("option");
-        option.value = month;
-        option.textContent = month;
-        monthSelect.appendChild(option);
-    });
-
-    monthSelect.value = months[months.length - 1];
-}
-
-// Populate keyfob buttons dynamically
-function populateKeyfobButtons() {
-    const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
-    const buttonContainer = document.getElementById("keyfob-buttons");
-    buttonContainer.innerHTML = "";
-
-    keyfobs.forEach(keyfob => {
-        const button = document.createElement("button");
-        button.textContent = keyfob;
-        button.onclick = () => filterFuelData(keyfob);
-        buttonContainer.appendChild(button);
-    });
 }
 
 // Filter fuel transactions & update summary row
@@ -71,10 +40,10 @@ function filterFuelData(selectedKeyfob) {
         return `<tr><td>${date}</td><td>${time}</td><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.distance_traveled} miles</td></tr>`;
     }).join('');
 
-    // Update summary row
+    // Calculate Monthly MPG
     const totalFuel = filteredData.reduce((sum, entry) => sum + entry.fuel_pumped, 0);
     const totalMileage = filteredData.reduce((sum, entry) => sum + entry.distance_traveled, 0);
-    const monthlyMPG = totalFuel > 0 ? (totalMileage / totalFuel).toFixed(2) : 0;
+    const monthlyMPG = totalFuel > 0 ? (totalMileage / totalFuel).toFixed(2) : "N/A";
 
     document.getElementById("totalFuel").textContent = `${totalFuel} L`;
     document.getElementById("totalMileage").textContent = `${totalMileage} miles`;
@@ -86,8 +55,9 @@ function filterFuelData(selectedKeyfob) {
 
     let mpgChange = previousMPG > 0 ? (((monthlyMPG - previousMPG) / previousMPG) * 100).toFixed(2) : 0;
     let mpgChangeColor = mpgChange >= 0 ? "green" : "red";
+    let mpgChangeIndicator = mpgChange >= 0 ? "⬆️" : "⬇️";
 
-    document.getElementById("mpgChange").innerHTML = `(${mpgChange}%)`;
+    document.getElementById("mpgChange").innerHTML = `(${mpgChange}% ${mpgChangeIndicator})`;
     document.getElementById("mpgChange").style.color = mpgChangeColor;
 }
 
