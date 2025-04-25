@@ -31,7 +31,7 @@
     <table>
         <thead>
             <tr>
-                <th>Vehicle Registration</th>
+                <th>Keyfob ID</th>
                 <th>Fuel Pumped (L)</th>
                 <th>Timestamp</th>
             </tr>
@@ -45,7 +45,7 @@
             const latestEntry = data[data.length - 1];
             const tankLevel = latestEntry.tank_level;
 
-            const maxTankCapacity = 27000; 
+            const maxTankCapacity = 27000;
             const percentageFill = (tankLevel / maxTankCapacity) * 100;
 
             const fuelElement = document.getElementById("fuelLevel");
@@ -78,9 +78,15 @@
             const data = getDummyData().filter(entry => entry.timestamp.startsWith(today));
 
             document.getElementById('todays-transactions').innerHTML = data.map(entry => 
-                `<tr><td>${entry.vehicle_registration}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
+                `<tr><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.timestamp}</td></tr>`
             ).join('');
         }
+
+        // Auto-refresh tank level & transactions every 5 minutes
+        setInterval(() => {
+            updateTankLevel();
+            getTodaysTransactions();
+        }, 300000);
 
         window.onload = () => {
             updateTankLevel();
