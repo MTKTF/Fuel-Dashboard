@@ -16,6 +16,7 @@
         <button onclick="window.location.href='index.html'">🏠 Home</button>
     </div>
 
+    <!-- Keyfob Buttons Container -->
     <div id="keyfob-buttons" class="keyfob-buttons"></div>
 
     <h2>Transactions for: <span id="selectedKeyfob">Select a keyfob</span></h2>
@@ -53,6 +54,126 @@
     <button onclick="exportToCSV()">Export to CSV</button>
     <button onclick="exportToExcel()">Export to Excel</button>
 
-    <script src="fuel.js"></script>
+    <script>
+        function populateKeyfobButtons() {
+            const keyfobContainer = document.getElementById("keyfob-buttons");
+            const fuelData = getDummyData();
+            let uniqueKeyfobs = [...new Set(fuelData.map(entry => entry.keyfob_id))];
+
+            // Sort keyfobs numerically
+            uniqueKeyfobs.sort((a, b) => Number(a) - Number(b));
+
+            // Structure keyfobs into rows of 5
+            keyfobContainer.innerHTML = ""; // Clear previous buttons
+            let rowDiv;
+
+            uniqueKeyfobs.forEach((keyfob, index) => {
+                if (index % 5 === 0) {
+                    rowDiv = document.createElement("div");
+                    rowDiv.className = "keyfob-row";
+                    keyfobContainer.appendChild(rowDiv);
+                }
+
+                const button = document.createElement("button");
+                button.textContent = keyfob;
+                button.onclick = () => filterFuelData(keyfob);
+                rowDiv.appendChild(button);
+            });
+        }
+
+        function populateMonthDropdown() {
+            const monthSelect = document.getElementById("monthSelect");
+            const fuelData = getDummyData();
+
+            // Extract unique months from transaction timestamps
+            const months = [...new Set(fuelData.map(entry => {
+                const date = new Date(entry.timestamp.split(" ")[0]);
+                return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+            }))];
+
+            // Sort months in descending order (latest first)
+            months.sort((a, b) => new Date(`1 ${b}`) - new Date(`1 ${a}`));
+
+            // Populate dropdown with sorted months
+            monthSelect.innerHTML = ""; // Clear existing options
+
+            const showAllOption = document.createElement("option");
+            showAllOption.value = "all";
+            showAllOption.textContent = "Show All Months";
+            monthSelect.appendChild(showAllOption);
+
+            months.forEach(month => {
+                const option = document.createElement("option");
+                option.value = month;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+
+            // Preselect the current month
+            const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+            monthSelect.value = months.includes(currentMonth) ? currentMonth : months[0]; // Latest month first
+        }
+
+        function filterFuelData(selectedKeyfob) {
+            document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
+            const selectedMonth = document.getElementById("monthSelect").value;
+            const fuelData = getDummyData();
+
+            let filteredData = fuelData.filter(entry => entry.keyfob_id === selectedKeyfob);
+
+            if (selectedMonth !== "all") {
+                filteredData = filteredData.filter(entry => {
+                    const entryMonth = new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long', year: 'numeric' });
+                    return entryMonth === selectedMonth;
+                });
+            }
+
+            document.getElementById("fuel-log").innerHTML = filteredData.map(entry =>
+                `<tr><td>${entry.timestamp.split(" ")[0]}</td><td>${entry.timestamp.split(" ")[1]}</td><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.mileage} miles</td></tr>`
+            ).join('');
+
+            document.getElementById("totalFuel").textContent = `${filteredData.reduce((sum, entry) => sum + entry.fuel_pumped, 0)} L`;
+            document.getElementById("totalMileage").textContent = `${filteredData.reduce((sum, entry) => sum + entry.mileage, 0)} miles`;
+        }
+
+        window.onload = function () {
+            populateKeyfobButtons();
+            populateMonthDropdown();
+            document.getElementById("monthSelect").addEventListener("change", function() {
+                const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
+                if (selectedKeyfob !== "Select a keyfob") filterFuelData(selectedKeyfob);
+            });
+        };
+    </script>
+
+    <style>
+        .keyfob-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .keyfob-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .keyfob-row button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .keyfob-row button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
 </body>
 </html>
