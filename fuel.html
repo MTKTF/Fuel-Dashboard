@@ -34,8 +34,17 @@
 
     <script>
         function populateKeyfobButtons() {
-            const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+            let keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
+
+            // Sort keyfobs numerically (assuming format is 'Keyfob X')
+            keyfobs.sort((a, b) => {
+                const numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
+                const numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
+                return numA - numB;
+            });
+
             const buttonContainer = document.getElementById("keyfob-buttons");
+            buttonContainer.innerHTML = ""; // Clear previous buttons
 
             keyfobs.forEach(keyfob => {
                 const button = document.createElement("button");
