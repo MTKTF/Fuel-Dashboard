@@ -11,6 +11,12 @@
 <body>
     <h1>Fuel Usage Report</h1>
 
+    <div class="nav-container">
+        <button onclick="window.location.href='index.html'">🏠 Home (Tank Level)</button>
+        <button onclick="window.location.href='fuel.html'">⛽ Fuel Transactions</button>
+        <button onclick="window.location.href='report.html'">📊 Reports</button>
+    </div>
+
     <canvas id="weeklyUsageChart"></canvas>
 
     <table>
@@ -49,27 +55,11 @@
                     <td>${entry.timestamp}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
-
-                if (!keyfobFuel[entry.keyfob_id]) {
-                    keyfobFuel[entry.keyfob_id] = 0;
-                }
-                keyfobFuel[entry.keyfob_id] += entry.fuel_pumped;
+                keyfobFuel[entry.keyfob_id] = (keyfobFuel[entry.keyfob_id] || 0) + entry.fuel_pumped;
             });
 
             updateReportChart(Object.keys(keyfobFuel), Object.values(keyfobFuel));
         }
-
-        function updateReportChart(keyfobs, fuelAmounts) {
-            reportChart.data.labels = keyfobs;
-            reportChart.data.datasets[0].data = fuelAmounts;
-            reportChart.update();
-        }
-
-        const reportCtx = document.getElementById('weeklyUsageChart').getContext('2d');
-        const reportChart = new Chart(reportCtx, {
-            type: 'bar',
-            options: { responsive: true, maintainAspectRatio: false }
-        });
 
         window.onload = fetchReportData;
     </script>
