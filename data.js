@@ -9,19 +9,17 @@ function getDummyData() {
     startDate.setMonth(today.getMonth() - 12); // 12 months ago from today
     let currentDate = startDate;
 
-    let transactionCount = 0;
-
     // Generate data for each day in the last 12 months
     while (currentDate <= today) {
         const dayOfWeek = currentDate.getDay(); // 0 (Sun) to 6 (Sat)
 
         // Generate data only for weekdays (Mon to Fri)
         if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-            // 20 transactions for this weekday
+            // Generate 20 transactions for this weekday (randomized)
             for (let transaction = 0; transaction < 20; transaction++) {
-                const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
-                const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
-                const randomDistance = Math.floor(Math.random() * 100) + 20; // 20-120 miles
+                const keyfobIndex = Math.floor(Math.random() * 20); // Randomly select keyfob
+                const randomFuel = Math.floor(Math.random() * 201) + 50; // Random fuel pumped between 50-250 liters
+                const randomDistance = Math.floor(Math.random() * 100) + 20; // Random distance between 20-120 miles
 
                 // Decrease tank level by the amount of fuel pumped
                 tankLevel = Math.max(0, tankLevel - randomFuel);
@@ -33,24 +31,17 @@ function getDummyData() {
 
                 // Add transaction to fuelData
                 fuelData.push({
-                    keyfob_id: randomKeyfob,
+                    keyfob_id: keyfobs[keyfobIndex], // Randomly assigned keyfob
                     fuel_pumped: randomFuel,
                     distance_traveled: randomDistance,
-                    timestamp: formatDateTime(currentDate, getRandomTime()),
+                    timestamp: formatDateTime(currentDate, getRandomTime(transaction)),
                     tank_level: tankLevel
                 });
-
-                transactionCount++;
             }
         }
 
         // Move to the next day
         currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // Ensure we generated exactly 5220 transactions
-    if (transactionCount !== 5220) {
-        console.error(`Expected 5220 transactions, but got ${transactionCount}.`);
     }
 
     return fuelData;
@@ -62,12 +53,13 @@ function formatDateTime(date, time) {
     return `${formattedDate} ${time}`;
 }
 
-// Helper function to generate a random time for transactions (between 8 AM and 6 PM)
-function getRandomTime() {
-    const hour = Math.floor(Math.random() * 10) + 8; // Random hour between 8 AM and 6 PM
-    const minute = Math.floor(Math.random() * 60); // Random minute
+// Helper function to generate a random time for each transaction
+function getRandomTime(transactionIndex) {
+    const hour = 8 + Math.floor(transactionIndex / 2); // Start from 8 AM, increment every 2 transactions
+    const minute = Math.floor(Math.random() * 60); // Random minutes (0-59)
     return `${hour < 10 ? '0' : ''}${hour}:${minute < 10 ? '0' : ''}${minute}:00`;
 }
+
 
 
 
