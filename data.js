@@ -2,32 +2,20 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `KEYFOB-${i + 1}`);
     const fuelData = [];
     const today = new Date();
-    let tankLevel = 47000; // Start at 47000 liters
+    let tankLevel = 47000;
 
-    const totalWeeks = 52;
-    const entriesPerWeek = 60;
-
-    for (let week = 0; week < totalWeeks; week++) {
-        for (let entry = 0; entry < entriesPerWeek; entry++) {
+    for (let week = 0; week < 52; week++) {
+        for (let entry = 0; entry < 60; entry++) {
             const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
             const randomFuel = Math.floor(Math.random() * 200) + 50;
             const randomDistance = Math.floor(Math.random() * 100) + 20;
-            const randomDayOffset = Math.floor(Math.random() * 5);
-
             const transactionDate = new Date(today);
-            transactionDate.setDate(today.getDate() - (week * 5 + randomDayOffset));
-
-            if (transactionDate.getDate() === 3) {
-                tankLevel = Math.min(tankLevel + 20000, 27000);
-            }
-
-            tankLevel = Math.max(0, tankLevel - randomFuel);
+            transactionDate.setDate(today.getDate() - (week * 5 + Math.floor(Math.random() * 5)));
 
             fuelData.push({
                 keyfob_id: randomKeyfob,
                 fuel_pumped: randomFuel,
                 distance_traveled: randomDistance,
-                tank_level: tankLevel,
                 timestamp: transactionDate.toISOString().split('T')[0] + " " + transactionDate.toLocaleTimeString()
             });
         }
@@ -40,19 +28,9 @@ function getDummyData() {
 function populateMonthDropdown() {
     const monthSelect = document.getElementById("monthSelect");
     const fuelData = getDummyData();
+    const months = [...new Set(fuelData.map(entry => new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long' })))];
 
-    const months = [...new Set(fuelData.map(entry => {
-        const date = new Date(entry.timestamp.split(" ")[0]);
-        return date.toLocaleString('default', { month: 'long' });
-    }))];
-
-    const monthOrder = {
-        "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
-        "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
-    };
-
-    months.sort((a, b) => monthOrder[a] - monthOrder[b]);
-
+    months.sort((a, b) => new Date(`1 ${a} 2025`) - new Date(`1 ${b} 2025`));
     months.forEach(month => {
         const option = document.createElement("option");
         option.value = month;
@@ -60,21 +38,14 @@ function populateMonthDropdown() {
         monthSelect.appendChild(option);
     });
 
-    monthSelect.value = months[months.length - 1]; // Preselect latest month
+    monthSelect.value = months[months.length - 1];
 }
 
 // Populate keyfob buttons dynamically
 function populateKeyfobButtons() {
     const keyfobs = [...new Set(getDummyData().map(entry => entry.keyfob_id))];
-
-    keyfobs.sort((a, b) => {
-        const numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
-        const numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
-        return numA - numB;
-    });
-
     const buttonContainer = document.getElementById("keyfob-buttons");
-    buttonContainer.innerHTML = ""; // Clear any previous buttons
+    buttonContainer.innerHTML = "";
 
     keyfobs.forEach(keyfob => {
         const button = document.createElement("button");
@@ -84,33 +55,47 @@ function populateKeyfobButtons() {
     });
 }
 
-// Filter fuel transactions based on selected keyfob & month
+// Filter fuel transactions & update summary row
 function filterFuelData(selectedKeyfob) {
     document.getElementById("selectedKeyfob").textContent = selectedKeyfob;
-
     const selectedMonth = document.getElementById("monthSelect").value;
     let filteredData = getDummyData().filter(entry => entry.keyfob_id === selectedKeyfob);
 
     if (selectedMonth !== "all") {
-        filteredData = filteredData.filter(entry => {
-            const date = new Date(entry.timestamp.split(" ")[0]);
-            return date.toLocaleString('default', { month: 'long' }) === selectedMonth;
-        });
+        filteredData = filteredData.filter(entry => new Date(entry.timestamp.split(" ")[0]).toLocaleString('default', { month: 'long' }) === selectedMonth);
     }
 
-    // Sort transactions by date (latest first)
     filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
     document.getElementById('fuel-log').innerHTML = filteredData.map(entry => {
         const [date, time] = entry.timestamp.split(" ");
-        return `<tr>
-            <td>${date}</td>
-            <td>${time}</td>
-            <td>${entry.keyfob_id}</td>
-            <td>${entry.fuel_pumped} L</td>
-            <td>${entry.distance_traveled} miles</td>
-        </tr>`;
+        return `<tr><td>${date}</td><td>${time}</td><td>${entry.keyfob_id}</td><td>${entry.fuel_pumped} L</td><td>${entry.distance_traveled} miles</td></tr>`;
     }).join('');
+
+    // Update summary row
+    const totalFuel = filteredData.reduce((sum, entry) => sum + entry.fuel_pumped, 0);
+    const totalMileage = filteredData.reduce((sum, entry) => sum + entry.distance_traveled, 0);
+    document.getElementById("totalFuel").textContent = `${totalFuel} L`;
+    document.getElementById("totalMileage").textContent = `${totalMileage} miles`;
+}
+
+// Export to CSV
+function exportToCSV() {
+    const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
+    const selectedMonth = document.getElementById("monthSelect").value;
+    const filename = `Fuel_Transactions_${selectedKeyfob}_${selectedMonth}.csv`;
+    let csvContent = "data:text/csv;charset=utf-8,Date,Time,Keyfob ID,Fuel Pumped (L),Mileage (Miles)\n";
+
+    document.querySelectorAll("#fuel-log tr").forEach(row => {
+        csvContent += Array.from(row.cells).map(cell => cell.textContent).join(",") + "\n";
+    });
+
+    csvContent += `Total,,${selectedKeyfob},${document.getElementById("totalFuel").textContent},${document.getElementById("totalMileage").textContent}\n`;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
 }
 
 // Ensure functionality runs on page load
@@ -119,8 +104,6 @@ window.onload = function () {
     populateKeyfobButtons();
     document.getElementById("monthSelect").addEventListener("change", function() {
         const selectedKeyfob = document.getElementById("selectedKeyfob").textContent;
-        if (selectedKeyfob !== "Select a keyfob") {
-            filterFuelData(selectedKeyfob);
-        }
+        if (selectedKeyfob !== "Select a keyfob") filterFuelData(selectedKeyfob);
     });
 };
