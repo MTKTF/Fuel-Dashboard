@@ -7,5 +7,9 @@ const dummyData = [
 ];
 
 function getDummyData() {
-    return dummyData;
+    return [
+        { keyfob_id: "ABC123", fuel_pumped: 10, tank_level: 50, timestamp: "2025-04-01 12:00:00" },
+        { keyfob_id: "DEF456", fuel_pumped: 15, tank_level: 40, timestamp: "2025-04-02 15:30:00" },
+        { keyfob_id: "GHI789", fuel_pumped: 20, tank_level: 30, timestamp: "2025-04-03 18:45:00" }
+    ];
 }
