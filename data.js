@@ -3,71 +3,60 @@ function getDummyData() {
     const keyfobs = Array.from({ length: 20 }, (_, i) => `Keyfob ${i + 1}`);
     const fuelData = [];
     const today = new Date();
+    const maxTankCapacity = 47000;
     let tankLevel = 22000; // Starting tank level (in liters)
-    const maxTankCapacity = 47000; // Maximum tank capacity
-
-    // Calculate the start date as 12 months ago
     const startDate = new Date(today);
-    startDate.setMonth(today.getMonth() - 12);
-
-    // Function to generate random weekdays over the last 12 months
+    startDate.setMonth(today.getMonth() - 12); // 12 months ago from today
     let currentDate = startDate;
+
+    let transactionCount = 0;
+
+    // Generate data for each day in the last 12 months
     while (currentDate <= today) {
-        const dayOfWeek = currentDate.getDay();
+        const dayOfWeek = currentDate.getDay(); // 0 (Sun) to 6 (Sat)
 
-        // Only generate data for weekdays (Monday = 1, Friday = 5)
+        // Generate data only for weekdays (Mon to Fri)
         if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-            // Capture the fuel level at 7 AM
-            const morningTransaction = {
-                keyfob_id: "N/A", // No transaction at 7 AM
-                fuel_pumped: 0,
-                distance_traveled: 0,
-                timestamp: formatDateTime(currentDate, "07:00:00"),
-                tank_level: tankLevel // Tank level at 7 AM
-            };
-            fuelData.push(morningTransaction);
-
+            // 20 transactions for this weekday
             for (let transaction = 0; transaction < 20; transaction++) {
                 const randomKeyfob = keyfobs[Math.floor(Math.random() * keyfobs.length)];
                 const randomFuel = Math.floor(Math.random() * 200) + 50; // 50-250L
                 const randomDistance = Math.floor(Math.random() * 100) + 20; // 20-120 miles
 
-                // Decrease tank level after each transaction, but cap it at 0
+                // Decrease tank level by the amount of fuel pumped
                 tankLevel = Math.max(0, tankLevel - randomFuel);
 
-                // If the date is the 3rd of the month, refill the tank by 22000 liters but not exceeding the max capacity
+                // Refill tank if it's the 3rd of the month (by 22,000 liters)
                 if (currentDate.getDate() === 3) {
-                    tankLevel = Math.min(maxTankCapacity, tankLevel + 22000); // Refill on the 3rd, max tank is 47,000
+                    tankLevel = Math.min(maxTankCapacity, tankLevel + 22000); // Refilling tank
                 }
 
+                // Add transaction to fuelData
                 fuelData.push({
                     keyfob_id: randomKeyfob,
                     fuel_pumped: randomFuel,
                     distance_traveled: randomDistance,
                     timestamp: formatDateTime(currentDate, getRandomTime()),
-                    tank_level: tankLevel // Track tank level after transaction
+                    tank_level: tankLevel
                 });
-            }
 
-            // Capture the fuel level at 7 PM
-            const eveningTransaction = {
-                keyfob_id: "N/A", // No transaction at 7 PM
-                fuel_pumped: 0,
-                distance_traveled: 0,
-                timestamp: formatDateTime(currentDate, "19:00:00"),
-                tank_level: tankLevel // Tank level at 7 PM
-            };
-            fuelData.push(eveningTransaction);
+                transactionCount++;
+            }
         }
 
         // Move to the next day
         currentDate.setDate(currentDate.getDate() + 1);
     }
 
+    // Ensure we generated exactly 5220 transactions
+    if (transactionCount !== 5220) {
+        console.error(`Expected 5220 transactions, but got ${transactionCount}.`);
+    }
+
     return fuelData;
 }
 
-// Helper function to format the date and time correctly
+// Helper function to format the date and time correctly (YYYY-MM-DD HH:MM:SS)
 function formatDateTime(date, time) {
     const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
     return `${formattedDate} ${time}`;
@@ -79,6 +68,7 @@ function getRandomTime() {
     const minute = Math.floor(Math.random() * 60); // Random minute
     return `${hour < 10 ? '0' : ''}${hour}:${minute < 10 ? '0' : ''}${minute}:00`;
 }
+
 
 
 
